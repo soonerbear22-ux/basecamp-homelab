@@ -34,7 +34,7 @@ The existing project record reports remote administration from Windows, a laptop
 
 Application workloads live in a VM rather than being installed directly on the hypervisor. Pi-hole lives in a separate LXC so Docker-VM maintenance need not also stop DNS. Both guests still depend on the same physical host: this is **not a highly available design**.
 
-Monitoring tools serve different purposes, but their presence does not establish complete alert coverage or an uptime guarantee. Open WebUI is documented as deployed; GPU passthrough and a functioning local model backend are not established here.
+Monitoring tools serve different purposes, but their presence does not establish complete alert coverage or an uptime guarantee. Open WebUI on Basecamp connects to Ollama on the main Windows PC. The owner confirms working local AI, image generation, voice, and purpose-built assistant profiles. Recovered project records also document tested live diagnostic tools. Basecamp GPU passthrough remains separate planned work; inference depends on the main PC.
 
 ## Planned work
 

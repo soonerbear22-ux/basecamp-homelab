@@ -11,7 +11,9 @@
 | Proxmox VE | BASECAMP | Virtual machine and LXC hosting | Documented hypervisor; exact version and guest allocations not recorded |
 | Docker Engine / Compose | core-services, Ubuntu Server 24.04 LTS VM | Containerized application stacks | Documented; sanitized stack definitions are not yet published |
 | Pi-hole | LXC 101 | DNS filtering | Documented; resolver distribution and redundancy are not established |
-| Open WebUI | Docker on core-services | Self-hosted AI web interface | Documented application; model backend, inference performance, and GPU use are not established |
+| Open WebUI | Docker on core-services | Self-hosted AI web interface | Working interface confirmed by owner; Ollama inference runs on the main Windows PC. Voice, image generation, and specialized assistant profiles are documented in the local AI project history |
+| Ollama | Main Windows PC | Local model inference for Open WebUI | Current owner preference: local tag `qwen3.6:35b`; comparative benchmark data not published |
+| Homelab API | core-services | FastAPI/OpenAPI diagnostic tools | Host/container status, processes, CPU/memory history, and disk I/O tested in the recovered integration record |
 | Homepage | Docker on core-services | Homelab dashboard | Documented; prior host-restriction troubleshooting is recorded at summary level |
 | Uptime Kuma | Docker on core-services | Service availability monitoring | Documented; target coverage and alert delivery are not recorded |
 | Beszel | Docker on core-services | Host/system monitoring | Documented; monitored inventory and agent placement need detail |

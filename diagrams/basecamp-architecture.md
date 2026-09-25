@@ -30,6 +30,8 @@ flowchart TB
         end
     end
 
+    Inference["Main Windows PC<br/>Ollama inference"]
+    WebUI --> Inference
     Gateway --- Admin
     Gateway --- Docker
     Gateway --- PiHole

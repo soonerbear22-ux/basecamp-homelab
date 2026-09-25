@@ -57,3 +57,7 @@ Pi-hole separation is not DNS redundancy. The repository does not demonstrate au
 | Rack integration | Implemented physical layout |
 
 See [security](security.md) for control gaps and [troubleshooting](troubleshooting.md) for the evidence format.
+
+## Local AI dependency
+
+Open WebUI on core-services connects to Ollama on the main Windows PC. This separates the application host from inference: a healthy WebUI does not guarantee that the inference PC is awake or reachable. The Basecamp RTX 3060 is not the documented inference device. Voice testing used an isolated development WebUI; its results should not be treated as a production upgrade.
