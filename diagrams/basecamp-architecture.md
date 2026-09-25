@@ -1,63 +1,55 @@
 # Basecamp Infrastructure Diagram
 
+[Overview](../README.md) · [Architecture](../docs/architecture.md) · [Networking](../docs/networking.md)
+
+This logical diagram represents the documented baseline. It shows workload placement and remote-access relationships, not physical cabling, firewall policy, subnet routes, or a live health check.
+
 ```mermaid
 flowchart TB
-
     Internet([Internet])
-    Gateway["AT&T BGW320<br/>Home Gateway"]
+    Gateway["AT&T BGW320<br/>Home gateway"]
+    Internet --- Gateway
 
-    Internet --> Gateway
-
-    subgraph LAN["Home Network"]
-        direction TB
-
-        Basecamp["BASECAMP<br/>Proxmox VE<br/>i7-9700K | 32 GB RAM"]
-
-        subgraph Proxmox["Virtualized Infrastructure"]
-            direction LR
-
-            Core["core-services<br/>Ubuntu Server 24.04 LTS<br/>Docker Host"]
-            PiHole["LXC 101<br/>Pi-hole<br/>DNS Filtering"]
+    subgraph LAN["Home network"]
+        subgraph Host["BASECAMP · Proxmox VE · i7-9700K · 32 GB RAM"]
+            subgraph VM["core-services VM · Ubuntu Server 24.04 LTS"]
+                Docker["Docker Engine / Compose"]
+                WebUI["Open WebUI"]
+                Homepage["Homepage"]
+                Kuma["Uptime Kuma"]
+                Beszel["Beszel"]
+                Metrics["Prometheus / Grafana components<br/>Experimental"]
+                Docker --> WebUI
+                Docker --> Homepage
+                Docker --> Kuma
+                Docker --> Beszel
+                Docker --> Metrics
+            end
+            PiHole["LXC 101<br/>Pi-hole · DNS filtering"]
+            Admin["Proxmox management"]
         end
-
-        subgraph Docker["Docker Services"]
-            direction LR
-            WebUI["Open WebUI"]
-            Homepage["Homepage"]
-            Kuma["Uptime Kuma"]
-            Beszel["Beszel"]
-            Monitoring["Monitoring<br/>Components"]
-        end
-
-        Gateway --> Basecamp
-        Basecamp --> Core
-        Basecamp --> PiHole
-
-        Core --> WebUI
-        Core --> Homepage
-        Core --> Kuma
-        Core --> Beszel
-        Core --> Monitoring
     end
 
-    subgraph Tailnet["Tailscale Overlay Network"]
-        direction LR
-        Windows["Windows<br/>Workstation"]
-        Outpost["OUTPOST<br/>Raspberry Pi 4"]
-        Mobile["iPhone / iPad"]
-        Laptop["Laptop"]
-    end
+    Gateway --- Admin
+    Gateway --- Docker
+    Gateway --- PiHole
 
-    Windows -. Secure Remote Access .-> Basecamp
-    Outpost -. Secure Remote Access .-> Core
-    Mobile -. Secure Remote Access .-> Core
-    Laptop -. Secure Remote Access .-> Basecamp
+    Clients["Authorized clients<br/>Windows · Laptop · iPhone / iPad<br/>OUTPOST · Raspberry Pi 4"]
+    Overlay["Tailscale overlay"]
+    Clients -.-> Overlay
+    Overlay -.-> Admin
+    Overlay -.-> Docker
 ```
 
-## Architecture Summary
+## How to read this diagram
 
-Basecamp acts as the primary virtualization host for the homelab.
+- Nested boxes show hosting: applications run on Docker inside core-services; Pi-hole is a separate LXC on the same physical host.
+- Solid lines show logical connectivity or application-host relationships. They do not represent port mappings or packet routes.
+- Dashed lines show the documented remote-access relationship through Tailscale. They do not assert that every client is allowed to reach every service.
+- Prometheus/Grafana-related work is labeled experimental. Planned VLANs, storage, backups, and GPU workloads are not shown as deployed.
 
-Proxmox VE separates infrastructure workloads into virtual machines and Linux containers. The `core-services` Ubuntu Server VM hosts containerized applications through Docker, while Pi-hole operates independently in an LXC container.
+## Failure boundary
 
-Local services communicate across the home LAN, while Tailscale provides authenticated remote connectivity for authorized endpoints without requiring management services to be directly exposed to the public internet.
+Both guests depend on BASECAMP. Separating DNS from the Docker VM helps with application maintenance but does not provide physical redundancy. Monitoring on the same host shares that host's failure boundary.
+
+No private addresses, tailnet names, credentials, or service endpoints are included. Update this diagram alongside the [architecture document](../docs/architecture.md) when the implementation changes.

@@ -1,133 +1,69 @@
 # Basecamp Homelab
 
-Basecamp is my self-hosted homelab built to develop hands-on experience with virtualization, Linux administration, containerized services, networking, monitoring, DNS, secure remote access, and local AI infrastructure.
+A practical infrastructure portfolio documenting my Proxmox-based home lab: Linux administration, virtualization, Docker services, DNS filtering, monitoring, and remote access.
 
-Rather than building the environment as a single finished system, I have expanded it incrementally as new requirements and projects have emerged. The lab serves both as production infrastructure for my home environment and as a platform for learning, testing, troubleshooting, and systems integration.
+**Stage: early implementation and documentation.** This repository describes the existing lab and the reasoning behind its design. It is not yet a complete deployment or recovery package. Current-state statements reflect the documented baseline, not a live availability audit.
 
-## Current Architecture
+## Start here
 
-Basecamp is a dedicated Proxmox VE virtualization host.
+| Document | What it covers |
+| --- | --- |
+| [Architecture](docs/architecture.md) | Hardware, workload boundaries, decisions, and failure dependencies |
+| [Infrastructure diagram](diagrams/basecamp-architecture.md) | Logical placement and remote-access relationships |
+| [Networking](docs/networking.md) | LAN, DNS, Tailscale, and validation gaps |
+| [Services](docs/services.md) | Service roles, placement, and operational documentation |
+| [Security](docs/security.md) | Documented controls, public-data handling, and planned hardening |
+| [Troubleshooting](docs/troubleshooting.md) | Prior work, evidence limits, and a repeatable incident record |
 
-### Physical Host
+## Current implementation
 
-- Intel Core i7-9700K — 8 cores / 8 threads
-- 32 GB DDR4 memory
-- NVIDIA GeForce RTX 3060 — 12 GB VRAM
-- 1 TB SSD
-- 4 TB HDD
-- Proxmox VE hypervisor
+| Layer | Documented implementation |
+| --- | --- |
+| Compute | BASECAMP running Proxmox VE |
+| Hardware | Intel Core i7-9700K; 32 GB DDR4; 1 TB SSD; 4 TB HDD |
+| Application host | `core-services`, an Ubuntu Server 24.04 LTS VM running Docker and Docker Compose stacks |
+| DNS | Pi-hole in dedicated Proxmox LXC 101 |
+| Applications | Open WebUI and Homepage |
+| Monitoring | Uptime Kuma, Beszel, and Prometheus/Grafana-related experiments |
+| Remote access | Tailscale between authorized devices; selected services use Tailscale HTTPS endpoints |
+| GPU | RTX 3060 with 12 GB VRAM installed; not assigned to a production workload |
 
-The RTX 3060 is currently installed but is not assigned to a production workload. Future GPU passthrough, AI, or other accelerated workloads may be explored as the lab evolves.
+The existing project record reports remote administration from Windows, a laptop, iPhone, iPad, and the Raspberry Pi-based Outpost workstation. It also records work on host updates, persistent addressing, Docker Compose, HTTPS access, and Homepage host restrictions. [Troubleshooting](docs/troubleshooting.md) separates these summaries from fully evidenced case studies.
 
-## Virtualization
+## Engineering decisions
 
-### `core-services`
+Application workloads live in a VM rather than being installed directly on the hypervisor. Pi-hole lives in a separate LXC so Docker-VM maintenance need not also stop DNS. Both guests still depend on the same physical host: this is **not a highly available design**.
 
-Ubuntu Server 24.04 LTS virtual machine used as the primary Docker application host.
+Monitoring tools serve different purposes, but their presence does not establish complete alert coverage or an uptime guarantee. Open WebUI is documented as deployed; GPU passthrough and a functioning local model backend are not established here.
 
-Current services include:
+## Planned work
 
-- Docker Engine
-- Open WebUI
-- Homepage
-- Uptime Kuma
-- Beszel monitoring
-- Prometheus/Grafana-related monitoring components
-- Additional internal homelab services
+- **Recovery:** automated backups and a documented restore exercise.
+- **Network:** segmentation, VLANs, and managed switching.
+- **Operations:** improved observability, tested automation, and configuration management.
+- **Infrastructure:** centralized storage, UPS integration, and physical rack organization.
+- **Security:** additional hardening with recorded validation.
+- **Optional exploration:** GPU passthrough and accelerated workloads.
 
-### LXC 101 — Pi-hole
+These are future directions from the project baseline, not completed capabilities or purchase commitments. Each should be marked complete only with implementation details and a sanitized validation record.
 
-Pi-hole runs in a dedicated Proxmox LXC container and provides network-level DNS filtering for the home network.
+## Repository layout
 
-## Networking & Remote Access
+```text
+basecamp-homelab/
+├── README.md
+├── docs/
+│   ├── architecture.md
+│   ├── networking.md
+│   ├── services.md
+│   ├── security.md
+│   └── troubleshooting.md
+└── diagrams/
+    └── basecamp-architecture.md
+```
 
-The homelab uses both the local network and a Tailscale overlay network.
+## Documentation and privacy
 
-Tailscale provides secure remote connectivity between authorized devices without directly exposing homelab management services to the public internet.
+Public documentation uses logical names and omits private addresses, tailnet identifiers, credentials, and sensitive configuration. No deployable configuration or automation is claimed until reviewed examples are actually added.
 
-Remote administration has been tested from multiple device types, including:
-
-- Windows workstation
-- Laptop
-- iPhone
-- iPad
-- Raspberry Pi-based Outpost workstation
-
-Selected services are available through Tailscale HTTPS endpoints, allowing the same service addresses to be used both at home and remotely.
-
-## Monitoring
-
-The environment includes multiple monitoring tools serving different purposes:
-
-- **Uptime Kuma** — service availability monitoring
-- **Beszel** — lightweight host and system monitoring
-- **Prometheus/Grafana components** — metrics collection and visualization experiments
-
-Monitoring has been used not only for dashboards but also to validate service health during configuration changes and troubleshooting.
-
-## Problems Solved
-
-Building Basecamp has required troubleshooting across multiple layers of the infrastructure stack.
-
-Examples include:
-
-- Configuring Proxmox repositories and completing host updates
-- Deploying and managing Docker Compose application stacks
-- Configuring persistent network addressing
-- Deploying Pi-hole in an LXC container
-- Establishing Tailscale connectivity between physical hosts, virtual machines, Raspberry Pis, mobile devices, and workstations
-- Converting LAN-only services to securely accessible remote services
-- Configuring HTTPS access for internal applications
-- Resolving host restrictions affecting Homepage access
-- Validating service availability with command-line network testing
-- Implementing system and service monitoring
-- Troubleshooting container health and application configuration
-
-## Skills Demonstrated
-
-This project currently demonstrates hands-on experience with:
-
-- Proxmox VE
-- Linux administration
-- Ubuntu Server
-- Virtual machines and LXC containers
-- Docker and Docker Compose
-- TCP/IP networking
-- DNS
-- SSH
-- Tailscale
-- Reverse proxy / HTTPS service access
-- Service monitoring
-- Infrastructure troubleshooting
-- Raspberry Pi integration
-- Self-hosted applications
-
-## Project Goals
-
-Basecamp continues to serve as a platform for developing practical infrastructure engineering skills.
-
-Planned areas of development include:
-
-- Automated backups and recovery testing
-- Improved infrastructure documentation
-- Network segmentation and VLANs
-- Managed switching
-- Centralized storage / NAS services
-- Infrastructure automation using Bash and Python
-- Configuration management
-- UPS integration and graceful shutdown
-- Improved observability
-- Rack-mounted infrastructure
-- Additional security hardening
-
-## Related Projects
-
-Basecamp provides infrastructure and connectivity for several additional projects that will be documented separately:
-
-- **Outpost** — portable Raspberry Pi edge workstation
-- **Private 5G SA Lab** — Open5GS and UERANSIM test environment
-- **Local AI Infrastructure** — self-hosted LLM and AI services
-
----
-
-This repository documents the continued development of the Basecamp homelab, including architecture decisions, implementation, troubleshooting, and lessons learned.
+The baseline for this documentation is the original README, architecture notes, and infrastructure diagram. Git history preserves the initial work and subsequent cleanup. Future changes should update the affected document and diagram together, with a meaningful commit explaining the outcome.
