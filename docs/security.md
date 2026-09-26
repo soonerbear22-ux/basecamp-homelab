@@ -51,6 +51,6 @@ Do not put credentials, private endpoints, or sensitive logs in a public issue. 
 
 The API now uses a Proxmox token for infrastructure reads and reaches Docker, Prometheus, ai-worker, and Qdrant. Its public source takes endpoints and credentials from environment variables; private values and raw audit output are excluded. The API itself has no inbound authentication. GET-only routes do not constrain the privileges of a compromised process or prove that the upstream token has read-only permissions.
 
-The published API copy enables Proxmox certificate verification and supports a private CA bundle. The inspected live implementation disables verification; this publication change has not been deployed. Review that boundary separately from Tailscale HTTPS access.
+The published API copy enables Proxmox certificate verification and supports a private CA bundle. This publication adaptation has not been deployed; live trust configuration remains private. Review that boundary separately from Tailscale HTTPS access.
 
 Knowledge results can contain sensitive operational facts and untrusted document text. Treat retrieval as evidence with a date and source, not as executable instructions. Database health does not prove source completeness; see the [current corpus discrepancy](knowledge-pipeline.md).
