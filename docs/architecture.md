@@ -1,63 +1,33 @@
-# Basecamp Architecture
+# Architecture
 
-[Overview](../README.md) · [Diagram](../diagrams/basecamp-architecture.md) · [Networking](networking.md) · [Services](services.md)
+[Overview](../README.md) · [Diagram](../diagrams/basecamp-architecture.md)
 
-## Scope and status
+Reviewed September 26, 2026 from the project records and a fresh read-only API audit.
 
-Basecamp is an early-stage, single-host homelab. Current implementation below reflects the existing repository baseline. Documentation review is not a live infrastructure audit; future work is labeled separately.
+## Workload placement
 
-## Physical host
-
-| Component | Documented configuration |
+| Host or guest | Role |
 | --- | --- |
-| Host | BASECAMP, running Proxmox VE |
-| CPU | Intel Core i7-9700K, 8 cores / 8 threads |
-| Memory | 32 GB DDR4 |
-| Storage | 1 TB SSD and 4 TB HDD |
-| GPU | NVIDIA GeForce RTX 3060, 12 GB VRAM |
+| Basecamp | Proxmox physical host: i7-9700K, 32 GB RAM, SSD and large HDD |
+| core-services — VM 100 | Application interfaces, Docker, metrics, Qdrant, knowledge ingestion, and Homelab API |
+| Pi-hole — LXC 101 | DNS filtering separate from the application VM |
+| ai-worker — VM 102 | Dedicated RTX 3060 12 GB passthrough; Qwen3-Embedding-4B via Hugging Face Text Embeddings Inference |
+| Main Windows PC | Ollama chat inference and ComfyUI image generation; historical voice services |
 
-The GPU is installed but is not assigned to a production workload. Storage pool layout, redundancy, guest resource allocations, and GPU passthrough are not documented as implemented.
+The September 26 master record identifies Proxmox VE 9.2.0 / pve-manager 9.2.20. This is a recorded version, not a claim that it is the latest release.
 
-## Workload boundaries
+## Two distinct AI compute roles
 
-| Workload | Placement | Responsibility |
-| --- | --- | --- |
-| core-services | Ubuntu Server 24.04 LTS VM | Docker Engine and Docker Compose application stacks |
-| Pi-hole | Dedicated Proxmox LXC 101 | Network-level DNS filtering |
-| Applications and monitoring | Docker on core-services | Open WebUI, Homepage, Uptime Kuma, Beszel, and monitoring experiments |
+The main PC generates chat responses and images. The Basecamp GPU generates 2560-dimensional embeddings for document ingestion and semantic queries. Embeddings encode text for retrieval; they do not themselves produce a chat answer.
 
-The [service inventory](services.md) records each service's role and the evidence still needed.
+The embedding deployment record identifies the Qwen/Qwen3-Embedding-4B model, float16 inference, and TEI image tag `86-1.9`. Runtime details must be rechecked before rebuilding.
 
-## Decisions and tradeoffs
+## Knowledge path
 
-| Decision | Reason | Limitation |
-| --- | --- | --- |
-| Place application workloads in a VM | Separate application maintenance from the hypervisor | The VM still depends on BASECAMP |
-| Run Pi-hole outside the Docker VM | Reduce coupling between DNS and application maintenance | Both guests share one physical host |
-| Use Tailscale for remote access | Connect authorized devices without requiring public management endpoints | Actual access policy and exposure still need documented validation |
-| Use multiple monitoring tools | Observe service availability and host health separately | Tool deployment alone does not demonstrate alert delivery or complete coverage |
-| Grow incrementally | Introduce changes as requirements emerge | Reproducibility depends on continuing to record configuration and recovery steps |
+Completed documents enter a Samba inbox on core-services. A systemd path unit triggers extraction and chunking, calls ai-worker for embeddings, and writes vectors plus source metadata to Qdrant. Homelab API embeds queries and retrieves relevant chunks. See [pipeline evidence](knowledge-pipeline.md).
 
-## Dependencies and failure boundaries
+## Failure dependencies
 
-A BASECAMP outage affects both the Docker VM and Pi-hole. A core-services outage affects its applications and any monitoring hosted there. Guest separation does not remove shared power, storage, or host dependencies. The gateway and network remain connectivity dependencies.
+All three guests share Basecamp's physical host. Moving Pi-hole outside the Docker VM separates application maintenance from DNS guest maintenance, but does not create physical redundancy. Monitoring hosted on Basecamp shares this failure domain.
 
-Pi-hole separation is not DNS redundancy. The repository does not demonstrate automatic failover, high availability, independent monitoring, or a tested recovery path.
-
-## Planned architecture work
-
-| Area | Evidence needed before marking complete |
-| --- | --- |
-| Backups and recovery | Backup scope, retention, and a successful restore exercise |
-| Segmentation and managed switching | Implemented boundaries and allowed/denied path tests |
-| Centralized storage | Storage design and recovery dependencies |
-| UPS integration | Monitoring and graceful shutdown validation |
-| Automation and configuration management | Sanitized, tested automation with rollback guidance |
-| Security hardening | Recorded controls and validation results |
-| Rack integration | Implemented physical layout |
-
-See [security](security.md) for control gaps and [troubleshooting](troubleshooting.md) for the evidence format.
-
-## Local AI dependency
-
-Open WebUI on core-services connects to Ollama on the main Windows PC. This separates the application host from inference: a healthy WebUI does not guarantee that the inference PC is awake or reachable. The Basecamp RTX 3060 is not the documented inference device. Voice testing used an isolated development WebUI; its results should not be treated as a production upgrade.
+The two named large-disk storage destinations share a filesystem. The main PC is a separate dependency for chat and images. A responsive WebUI does not prove every backend is available.

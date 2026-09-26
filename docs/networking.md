@@ -10,6 +10,7 @@
 | Home LAN | Local connectivity for infrastructure and clients |
 | BASECAMP | Proxmox host connected to the home network |
 | core-services | Application VM participating in LAN and Tailscale connectivity |
+| ai-worker | Separate LAN and Tailscale reachability; embedding dependency for ingestion/search |
 | Pi-hole in LXC 101 | Network-level DNS filtering |
 | Tailscale | Authenticated overlay connectivity for authorized endpoints |
 
@@ -49,3 +50,9 @@ Record observations separately from assumptions. An application response, succes
 VLANs, network segmentation, and managed switching are planned. No implemented VLAN IDs, subnet design, subnet router, exit node, or firewall policy is asserted here.
 
 Before a network change, record the working baseline and a recovery access path privately. Change one layer at a time, verify the intended paths, and use the [troubleshooting record](troubleshooting.md) to document the outcome.
+
+## September 26 additions
+
+The knowledge inbox is available through an authenticated Samba share mapped on Windows. Tailscale Serve mappings were inspected for production WebUI, dashboard, and monitoring access. The old voice-test mapping remains configured even though its historical container was absent from the morning inventory; a saved route is not evidence of an available backend.
+
+The latest combined audit checks ai-worker TCP reachability and the embedding HTTP health route separately. A TCP connection does not establish authenticated SSH access, and LAN HTTP health does not independently test the overlay HTTP path.

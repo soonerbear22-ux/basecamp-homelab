@@ -1,74 +1,46 @@
 # Basecamp Homelab
 
-A practical infrastructure portfolio documenting my Proxmox-based home lab: Linux administration, virtualization, Docker services, DNS filtering, monitoring, and remote access.
+A Proxmox-based infrastructure lab built and operated by Logan: Linux guests, Docker services, DNS filtering, GPU-backed embeddings, semantic knowledge retrieval, monitoring, and private remote access.
 
-**Stage: early implementation and documentation.** This repository describes the existing lab and the reasoning behind its design. It is not yet a complete deployment or recovery package. Current-state statements reflect the documented baseline, not a live availability audit.
-
-## Start here
-
-| Document | What it covers |
-| --- | --- |
-| [Architecture](docs/architecture.md) | Hardware, workload boundaries, decisions, and failure dependencies |
-| [Infrastructure diagram](diagrams/basecamp-architecture.md) | Logical placement and remote-access relationships |
-| [Networking](docs/networking.md) | LAN, DNS, Tailscale, and validation gaps |
-| [Services](docs/services.md) | Service roles, placement, and operational documentation |
-| [Security](docs/security.md) | Documented controls, public-data handling, and planned hardening |
-| [Troubleshooting](docs/troubleshooting.md) | Prior work, evidence limits, and a repeatable incident record |
+**Updated September 26, 2026.** A live audit at 21:42 UTC retrieved all seven component groups, reported all three expected guests running, and found all eleven expected core-services containers running. These are dated observations, not an uptime guarantee.
 
 ## Current implementation
 
-| Layer | Documented implementation |
+| Layer | Implemented |
 | --- | --- |
-| Compute | BASECAMP running Proxmox VE |
-| Hardware | Intel Core i7-9700K; 32 GB DDR4; 1 TB SSD; 4 TB HDD |
-| Application host | `core-services`, an Ubuntu Server 24.04 LTS VM running Docker and Docker Compose stacks |
-| DNS | Pi-hole in dedicated Proxmox LXC 101 |
-| Applications | Open WebUI and Homepage |
-| Monitoring | Uptime Kuma, Beszel, and Prometheus/Grafana-related experiments |
-| Remote access | Tailscale between authorized devices; selected services use Tailscale HTTPS endpoints |
-| GPU | RTX 3060 with 12 GB VRAM installed; not assigned to a production workload |
+| Physical host | Intel Core i7-9700K, 32 GB RAM, 1 TB SSD, 4 TB HDD |
+| VM 100 — core-services | 8 GB allocated RAM, 100 GB virtual system disk; Docker applications and knowledge infrastructure |
+| LXC 101 — Pi-hole | Separate DNS filtering guest |
+| VM 102 — ai-worker | 12 GB allocated RAM, 100 GB virtual system disk; RTX 3060 12 GB passed through for Qwen3-Embedding-4B |
+| Applications | Open WebUI, Open Terminal, Homepage, Homelab API |
+| Knowledge | Samba inbox, systemd ingestion watcher, GPU embeddings, Qdrant, semantic search API |
+| Monitoring | Prometheus, Node Exporter, Grafana, Uptime Kuma, Beszel and its agent |
+| Backups | Inspected daily snapshot job covers VM 100 and LXC 101, with retention set to the last seven backups |
+| Remote access | Tailscale and selected private HTTPS routes |
 
-The existing project record reports remote administration from Windows, a laptop, iPhone, iPad, and the Raspberry Pi-based Outpost workstation. It also records work on host updates, persistent addressing, Docker Compose, HTTPS access, and Homepage host restrictions. [Troubleshooting](docs/troubleshooting.md) separates these summaries from fully evidenced case studies.
+Ollama chat inference and ComfyUI image generation run on the main Windows PC. Basecamp's GPU serves the separate embedding workload.
 
-## Engineering decisions
+## Documentation
 
-Application workloads live in a VM rather than being installed directly on the hypervisor. Pi-hole lives in a separate LXC so Docker-VM maintenance need not also stop DNS. Both guests still depend on the same physical host: this is **not a highly available design**.
+| Document | Purpose |
+| --- | --- |
+| [Architecture](docs/architecture.md) · [diagram](diagrams/basecamp-architecture.md) | Placement, dependencies, and GPU role |
+| [Services](docs/services.md) | Current service inventory and evidence limits |
+| [Networking](docs/networking.md) | Connectivity and private access boundaries |
+| [Storage](docs/storage.md) · [backup and recovery](docs/backup-recovery.md) | Persistence, scheduled coverage, shared failure domains |
+| [Knowledge pipeline](docs/knowledge-pipeline.md) | Ingestion, retrieval, and the current corpus discrepancy |
+| [September 26 validation](docs/validation-2026-09-26.md) | Dated evidence and unresolved observations |
+| [Security](docs/security.md) · [troubleshooting](docs/troubleshooting.md) | Privilege boundaries and incident lessons |
 
-Monitoring tools serve different purposes, but their presence does not establish complete alert coverage or an uptime guarantee. Open WebUI on Basecamp connects to Ollama on the main Windows PC. The owner confirms working local AI, image generation, voice, and purpose-built assistant profiles. Recovered project records also document tested live diagnostic tools. Basecamp GPU passthrough remains separate planned work; inference depends on the main PC.
+## Related projects
 
-## Related engineering projects
+- [Local AI Lab](https://github.com/soonerbear22-ux/local-ai-lab): Ollama, Open WebUI, ComfyUI/FLUX, voice history, assistant profiles, and knowledge retrieval.
+- [Homelab API](https://github.com/soonerbear22-ux/homelab-api): thirteen OpenAPI operations, sanitized source, and mocked regression tests.
 
-- [Local AI Lab](https://github.com/soonerbear22-ux/local-ai-lab): split-host AI architecture, model evaluation history, voice integration, and specialized assistants.
-- [Homelab API](https://github.com/soonerbear22-ux/homelab-api): sanitized FastAPI source for Open WebUI diagnostic tools, with validation and security documentation.
+## Current limits and next work
 
-## Planned work
+GPU passthrough, embeddings, and scheduled guest backups are implemented. The inspected backup job does not cover ai-worker; off-host copies and isolated restores remain unverified. Two Proxmox storage names share one physical disk.
 
-- **Recovery:** automated backups and a documented restore exercise.
-- **Network:** segmentation, VLANs, and managed switching.
-- **Operations:** improved observability, tested automation, and configuration management.
-- **Infrastructure:** centralized storage, UPS integration, and physical rack organization.
-- **Security:** additional hardening with recorded validation.
-- **Optional exploration:** GPU passthrough and accelerated workloads.
+The morning knowledge expansion passed its checks, but the later live index contains only the two baseline sources. Reconcile that discrepancy before claiming the added runbooks remain searchable. Current voice recovery, full-topology reboot recovery, monitoring alert delivery, VLANs, UPS integration, and complete deployment reproduction remain follow-up work.
 
-These are future directions from the project baseline, not completed capabilities or purchase commitments. Each should be marked complete only with implementation details and a sanitized validation record.
-
-## Repository layout
-
-```text
-basecamp-homelab/
-├── README.md
-├── docs/
-│   ├── architecture.md
-│   ├── networking.md
-│   ├── services.md
-│   ├── security.md
-│   └── troubleshooting.md
-└── diagrams/
-    └── basecamp-architecture.md
-```
-
-## Documentation and privacy
-
-Public documentation uses logical names and omits private addresses, tailnet identifiers, credentials, and sensitive configuration. No deployable configuration or automation is claimed until reviewed examples are actually added.
-
-The baseline for this documentation is the original README, architecture notes, and infrastructure diagram. Git history preserves the initial work and subsequent cleanup. Future changes should update the affected document and diagram together, with a meaningful commit explaining the outcome.
+Public files omit private addresses, tailnet names, credentials, raw telemetry, and private knowledge content. Updates preserve Git history and separate historical tests from current observations.

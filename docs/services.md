@@ -1,47 +1,28 @@
-# Service Inventory
+# Service inventory
 
-[Overview](../README.md) · [Architecture](architecture.md) · [Networking](networking.md) · [Troubleshooting](troubleshooting.md)
+[Overview](../README.md) · [Architecture](architecture.md)
 
-## Documented services
+The September 26 live audit reported all eleven expected core-services containers running. Container state alone does not establish every feature's health.
 
-“Documented” means present in the existing project record, not independently health-checked during this documentation update.
+| Service | Placement | Role and evidence |
+| --- | --- | --- |
+| Proxmox | Basecamp | API status, guest inventory, and storage reads succeeded |
+| Pi-hole | LXC 101 | DNS guest running; morning record confirmed DNS service active |
+| Open WebUI | core-services | AI interface; prior owner-confirmed chat/image integrations |
+| Open Terminal | core-services | Separate execution capability for selected assistants |
+| Homelab API | core-services | Thirteen GET operations covering diagnostics, retrieval, and infrastructure audit |
+| Qdrant | core-services | Green; 2560-dimensional Cosine collection; live source inventory checked |
+| Homepage | core-services | Dashboard container running |
+| Prometheus / Node Exporter / Grafana | core-services | Established metrics collection and visualization stack |
+| Uptime Kuma | core-services | Availability monitoring; alert delivery coverage unverified |
+| Beszel / Beszel Agent | core-services | System monitoring; full monitored-host inventory not audited here |
+| Qwen3-Embedding-4B / TEI | ai-worker | Real embedding request succeeded with 2560 dimensions |
+| Ollama | Main Windows PC | Owner-confirmed chat backend; current preference recorded as local tag `qwen3.6:35b` |
+| ComfyUI / FLUX | Main Windows PC | Saved workflows, installed model files, and successful-generation logs inspected |
+| Kokoro / Faster-Whisper | Main Windows PC, historical voice setup | Kokoro observed running in the morning; full current voice path and startup remain unverified |
 
-| Service | Placement | Purpose | Status and limits |
-| --- | --- | --- | --- |
-| Proxmox VE | BASECAMP | Virtual machine and LXC hosting | Documented hypervisor; exact version and guest allocations not recorded |
-| Docker Engine / Compose | core-services, Ubuntu Server 24.04 LTS VM | Containerized application stacks | Documented; sanitized stack definitions are not yet published |
-| Pi-hole | LXC 101 | DNS filtering | Documented; resolver distribution and redundancy are not established |
-| Open WebUI | Docker on core-services | Self-hosted AI web interface | Working interface confirmed by owner; Ollama inference runs on the main Windows PC. Voice, image generation, and specialized assistant profiles are documented in the local AI project history |
-| Ollama | Main Windows PC | Local model inference for Open WebUI | Current owner preference: local tag `qwen3.6:35b`; comparative benchmark data not published |
-| Homelab API | core-services | FastAPI/OpenAPI diagnostic tools | Host/container status, processes, CPU/memory history, and disk I/O tested in the recovered integration record |
-| Homepage | Docker on core-services | Homelab dashboard | Documented; prior host-restriction troubleshooting is recorded at summary level |
-| Uptime Kuma | Docker on core-services | Service availability monitoring | Documented; target coverage and alert delivery are not recorded |
-| Beszel | Docker on core-services | Host/system monitoring | Documented; monitored inventory and agent placement need detail |
-| Prometheus/Grafana-related components | core-services monitoring environment | Metrics collection and visualization experiments | Experimental; no complete production monitoring stack is claimed |
-| Tailscale | Documented infrastructure and authorized endpoints | Remote connectivity and selected HTTPS access | Per-device installation details and policy validation remain private or undocumented |
+The eleven-container count includes the separate monitoring components and excludes services outside core-services. The ingestion watcher is a systemd unit, not another Docker container.
 
-Unnamed “supporting services” in the original notes are not expanded into invented inventory entries.
+VM 100, VM 102, and LXC 101 had onboot enabled in the morning audit. Eight inspected application containers used `unless-stopped`. Those settings do not prove a successful recovery of the current topology.
 
-## Operational dependencies
-
-The application services share core-services and BASECAMP. Pi-hole is outside the Docker VM but still shares the physical host. Monitoring located on the system it observes can disappear during that system's outage; the repository does not demonstrate an independent alerting path.
-
-Availability checks should distinguish a running container from a usable application. Record both the service response and the relevant dependency when validating a change.
-
-## Information to capture for each service
-
-Before treating this repository as a reproducible operations guide, add a sanitized record of:
-
-- Installed version and deployment method.
-- Persistent data locations described by purpose, with sensitive paths omitted.
-- Dependencies, intended access scope, and authentication requirements.
-- Health-check method and expected result.
-- Upgrade procedure, pre-change backup needs, and rollback method.
-- Backup scope and a successful recovery test.
-- A dated validation result and known limitations.
-
-These are documentation requirements for future work, not claims that backup, rollback, or recovery has been tested.
-
-## Change record convention
-
-For a service change, record the reason, affected workload, prior state, action, validation, and rollback outcome. Update this inventory only after verifying the implementation. Keep credentials and private endpoints out of commits; see [security](security.md).
+Version tags such as `main` and `latest` do not establish that installed images are current upstream. Secrets and deployment-specific configuration remain outside this repository.

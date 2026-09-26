@@ -28,6 +28,15 @@ No exact commands or root causes are invented to fill these gaps.
 
 **Prevention:** link to the canonical diagram from the README and architecture document; review the repository-relative path before committing a new file.
 
+## September 26 engineering evidence
+
+- **Docker image metadata failure:** the deployed API now retains a container result using its configured image when an image metadata lookup fails, and includes a warning instead of losing the entire inventory. The public regression test covers this fallback.
+- **Broad homelab audits:** a combined endpoint retrieves seven component groups and retains partial results when a component raises an error. Derived fields keep ambiguous memory or vector-index readings separate from confirmed faults.
+- **Knowledge freshness discrepancy:** the morning expansion passed 28 targeted retrieval checks at 235 points; the later direct inventory contained only two baseline sources and 101 points. The processed runbooks remained present. Cause is unverified, and no corrective database change was made in this publication task.
+- **Samba ingestion race:** a three-second pre-start delay followed a successful transfer/ingestion test. It is a mitigation for that observed case, not a general file-completion protocol.
+
+See the [dated validation record](validation-2026-09-26.md) and [knowledge pipeline](knowledge-pipeline.md).
+
 ## Suggested diagnostic workflow
 
 This is a workflow for future incidents, not a report of tests run against the lab.
