@@ -36,6 +36,11 @@ Application workloads live in a VM rather than being installed directly on the h
 
 Monitoring tools serve different purposes, but their presence does not establish complete alert coverage or an uptime guarantee. Open WebUI on Basecamp connects to Ollama on the main Windows PC. The owner confirms working local AI, image generation, voice, and purpose-built assistant profiles. Recovered project records also document tested live diagnostic tools. Basecamp GPU passthrough remains separate planned work; inference depends on the main PC.
 
+## Related engineering projects
+
+- [Local AI Lab](https://github.com/soonerbear22-ux/local-ai-lab): split-host AI architecture, model evaluation history, voice integration, and specialized assistants.
+- [Homelab API](https://github.com/soonerbear22-ux/homelab-api): sanitized FastAPI source for Open WebUI diagnostic tools, with validation and security documentation.
+
 ## Planned work
 
 - **Recovery:** automated backups and a documented restore exercise.
