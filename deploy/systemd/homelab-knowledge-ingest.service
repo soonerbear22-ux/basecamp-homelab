@@ -1,0 +1,13 @@
+[Unit]
+Description=Basecamp knowledge ingestion
+After=network-online.target docker.service tailscaled.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=basecamp
+Group=basecamp
+WorkingDirectory=/opt/basecamp/knowledge
+EnvironmentFile=/etc/basecamp/knowledge.env
+ExecStartPre=/usr/bin/sleep 3
+ExecStart=/usr/bin/flock -n /opt/basecamp/knowledge/state/ingest.lock /opt/basecamp/knowledge/.venv/bin/python /opt/basecamp/knowledge/scripts/ingest.py

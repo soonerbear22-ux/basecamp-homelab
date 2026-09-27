@@ -1,33 +1,29 @@
 # Architecture
 
-[Overview](../README.md) · [Diagram](../diagrams/basecamp-architecture.md)
+[Overview](../README.md) · [Diagram](../diagrams/basecamp-architecture.md) · [Rebuild](rebuild.md)
 
-Reviewed September 26, 2026 from the project records and a fresh read-only API audit.
+Basecamp V1 separates application services, DNS, and GPU embeddings across three guests on one Proxmox host. Installed versions and immutable image references are in the [manifest](../release/manifest.json).
 
-## Workload placement
+| Location | Responsibility | Dependency |
+| --- | --- | --- |
+| Proxmox host | Guest lifecycle, storage, scheduled backups | Physical host, SSD and bulk HDD |
+| VM 100 core-services | Interfaces, monitoring, API, Qdrant, ingestion, Samba inbox | Guest disk and network; ai-worker for embeddings |
+| LXC 101 Pi-hole | DNS filtering and site-specific DHCP | Host and LAN; independent of the application VM |
+| VM 102 ai-worker | Qwen/Qwen3-Embedding-4B through TEI, float16, 2560 dimensions | Passed-through RTX 3060, driver, container runtime, model cache |
+| Main PC | Ollama response generation and ComfyUI images | Separate Windows runtime and models |
 
-| Host or guest | Role |
-| --- | --- |
-| Basecamp | Proxmox physical host: i7-9700K, 32 GB RAM, SSD and large HDD |
-| core-services — VM 100 | Application interfaces, Docker, metrics, Qdrant, knowledge ingestion, and Homelab API |
-| Pi-hole — LXC 101 | DNS filtering separate from the application VM |
-| ai-worker — VM 102 | Dedicated RTX 3060 12 GB passthrough; Qwen3-Embedding-4B via Hugging Face Text Embeddings Inference |
-| Main Windows PC | Ollama chat inference and ComfyUI image generation; historical voice services |
+The capture records pve-manager 9.2.20, Ubuntu 24.04.5 LTS on core-services, Docker 29.8.1 and Compose 5.5.1. These are observed versions, not claims about the newest upstream releases.
 
-The September 26 master record identifies Proxmox VE 9.2.0 / pve-manager 9.2.20. This is a recorded version, not a claim that it is the latest release.
+## Data flow and boundaries
 
-## Two distinct AI compute roles
+The authenticated Samba inbox feeds a systemd watcher and a locked ingestion process. Text extraction and chunking run on core-services; ai-worker generates vectors. Qdrant persists vectors and source metadata. The API embeds queries and returns scored chunks to its clients, including Open WebUI tools.
 
-The main PC generates chat responses and images. The Basecamp GPU generates 2560-dimensional embeddings for document ingestion and semantic queries. Embeddings encode text for retrieval; they do not themselves produce a chat answer.
+The API also reads Docker, Prometheus, Proxmox, and embedding health. Its full audit collects seven component groups independently. Successful collection is different from every component being healthy.
 
-The embedding deployment record identifies the Qwen/Qwen3-Embedding-4B model, float16 inference, and TEI image tag `86-1.9`. Runtime details must be rechecked before rebuilding.
+Pi-hole is separate from Docker maintenance, but all guests share a physical host. Monitoring observes infrastructure on which it also depends. Backup and bulk storage share one HDD. This is not host-level high availability.
 
-## Knowledge path
+Chat and images depend on the main PC; embeddings depend on the Basecamp GPU. A responsive WebUI proves neither backend is available. Recovery follows dependency order.
 
-Completed documents enter a Samba inbox on core-services. A systemd path unit triggers extraction and chunking, calls ai-worker for embeddings, and writes vectors plus source metadata to Qdrant. Homelab API embeds queries and retrieves relevant chunks. See [pipeline evidence](knowledge-pipeline.md).
+## Public adaptations
 
-## Failure dependencies
-
-All three guests share Basecamp's physical host. Moving Pi-hole outside the Docker VM separates application maintenance from DNS guest maintenance, but does not create physical redundancy. Monitoring hosted on Basecamp shares this failure domain.
-
-The two named large-disk storage destinations share a filesystem. The main PC is a separate dependency for chat and images. A responsive WebUI does not prove every backend is available.
+The live installation uses several Compose projects. The public recipe consolidates core services under `basecamp-v1`, preserves service names/data paths, adds digest pins and explicit bindings, and supplies site settings through environment variables. The API uses its published certificate-verifying source. A dedicated `basecamp` ingestion account replaces a personal account. Production was not migrated during packaging.

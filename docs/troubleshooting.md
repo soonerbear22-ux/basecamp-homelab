@@ -32,10 +32,13 @@ No exact commands or root causes are invented to fill these gaps.
 
 - **Docker image metadata failure:** the deployed API now retains a container result using its configured image when an image metadata lookup fails, and includes a warning instead of losing the entire inventory. The public regression test covers this fallback.
 - **Broad homelab audits:** a combined endpoint retrieves seven component groups and retains partial results when a component raises an error. Derived fields keep ambiguous memory or vector-index readings separate from confirmed faults.
-- **Knowledge freshness discrepancy:** the morning expansion passed 28 targeted retrieval checks at 235 points; the later direct inventory contained only two baseline sources and 101 points. The processed runbooks remained present. Cause is unverified, and no corrective database change was made in this publication task.
+- **Knowledge freshness discrepancy, resolved before V1:** the morning expansion passed 28 targeted retrieval checks at 235 points; a later observation showed two baseline sources/101 points. The completion work restored the corpus, and the final direct inventory now has 34 source names/244 points, including retained validation documents. The earlier observation remains in the historical record; it is no longer the release state.
 - **Samba ingestion race:** a three-second pre-start delay followed a successful transfer/ingestion test. It is a mitigation for that observed case, not a general file-completion protocol.
+- **Ingestion lock permissions:** a lock under `/run` could not be opened by the service user. Moving it to the writable knowledge state directory allowed the locked service to ingest its test file successfully. The temporary lock-test source was removed afterward.
+- **Misleading ai-worker memory percentage:** Proxmox reported a value slightly above allocated memory. Guest inspection showed about 10 GiB available, zero swap use and no reported OOM events; no RAM change was justified. V1 keeps this ambiguous metric separate from a confirmed memory fault.
+- **Recovery validation:** the completion session passed a real host reboot with all three guests and eleven core containers recovering. The final packaging capture confirmed the running state and ai-worker guest-agent response without repeating a disruptive reboot.
 
-See the [dated validation record](validation-2026-09-26.md) and [knowledge pipeline](knowledge-pipeline.md).
+See the [final V1 validation](validation-v1.md), [historical observation](validation-2026-09-26.md), and [knowledge pipeline](knowledge-pipeline.md).
 
 ## Suggested diagnostic workflow
 

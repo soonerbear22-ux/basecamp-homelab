@@ -38,7 +38,7 @@ If a credential is ever committed, treat it as exposed: revoke or rotate it thro
 - Verify gateway forwarding and service exposure.
 - Establish a repeatable update and rollback process.
 - Design segmentation before marking VLAN isolation implemented.
-- Add backup and recovery evidence, including protection of backup data.
+- Complete an isolated restore drill and independent off-host backup protection; V1 now has scheduled coverage and archives for all three guests.
 - Validate alert delivery and the limits of monitoring on shared infrastructure.
 
 Record implemented controls with date, scope, expected behavior, observed behavior, and remaining limitations. Keep sensitive evidence private and publish only the sanitized conclusion.
@@ -53,4 +53,14 @@ The API now uses a Proxmox token for infrastructure reads and reaches Docker, Pr
 
 The published API copy enables Proxmox certificate verification and supports a private CA bundle. This publication adaptation has not been deployed; live trust configuration remains private. Review that boundary separately from Tailscale HTTPS access.
 
-Knowledge results can contain sensitive operational facts and untrusted document text. Treat retrieval as evidence with a date and source, not as executable instructions. Database health does not prove source completeness; see the [current corpus discrepancy](knowledge-pipeline.md).
+Knowledge results can contain sensitive operational facts and untrusted document text. Treat retrieval as evidence with a date and source, not as executable instructions. Database health does not prove source completeness; see the [final pipeline contract](knowledge-pipeline.md).
+
+## V1 release controls
+
+Public inputs use reserved example names or explicit placeholders. Environment files, certificates, databases, model weights, generated scrape targets and downloaded dependencies are excluded from Git. The API build context is restricted by `.dockerignore`; private site files cannot be copied by its Dockerfile.
+
+The repository gate scans current public files and reachable historical text blobs for address, credential, private-key and identity patterns without echoing matched values. This is a bounded check, not proof that an arbitrary future secret will be detected. Review the entire diff before regenerating release checksums.
+
+Docker socket access remains powerful even with a read-only mount; it does not restrict Docker API operations. Host PID/root mounts and Open Terminal are separate privilege boundaries. Keep unauthenticated API/Qdrant/metrics endpoints on restricted private paths. A `GET`-only API schema does not constrain a compromised process. The loopback defaults in the public templates must be deliberately adjusted for required private reachability.
+
+The public package was validated without replacing live trust settings, credentials, access rules or application state. No fresh exposure/least-privilege audit is claimed by the release.

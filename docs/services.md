@@ -1,28 +1,25 @@
 # Service inventory
 
-[Overview](../README.md) · [Architecture](architecture.md)
+[Overview](../README.md) · [Configuration](configuration.md) · [Operations](operations.md)
 
-The September 26 live audit reported all eleven expected core-services containers running. Container state alone does not establish every feature's health.
+All eleven core containers were running with `unless-stopped` in the final capture. Ports below describe the reference recipe; access policy and bind interfaces are local inputs.
 
-| Service | Placement | Role and evidence |
+| Service | Port | Role/state |
 | --- | --- | --- |
-| Proxmox | Basecamp | API status, guest inventory, and storage reads succeeded |
-| Pi-hole | LXC 101 | DNS guest running; morning record confirmed DNS service active |
-| Open WebUI | core-services | AI interface; prior owner-confirmed chat/image integrations |
-| Open Terminal | core-services | Separate execution capability for selected assistants |
-| Homelab API | core-services | Thirteen GET operations covering diagnostics, retrieval, and infrastructure audit |
-| Qdrant | core-services | Green; 2560-dimensional Cosine collection; live source inventory checked |
-| Homepage | core-services | Dashboard container running |
-| Prometheus / Node Exporter / Grafana | core-services | Established metrics collection and visualization stack |
-| Uptime Kuma | core-services | Availability monitoring; alert delivery coverage unverified |
-| Beszel / Beszel Agent | core-services | System monitoring; full monitored-host inventory not audited here |
-| Qwen3-Embedding-4B / TEI | ai-worker | Real embedding request succeeded with 2560 dimensions |
-| Ollama | Main Windows PC | Owner-confirmed chat backend; current preference recorded as local tag `qwen3.6:35b` |
-| ComfyUI / FLUX | Main Windows PC | Saved workflows, installed model files, and successful-generation logs inspected |
-| Kokoro / Faster-Whisper | Main Windows PC, historical voice setup | Kokoro observed running in the morning; full current voice path and startup remain unverified |
+| Open WebUI | 3002 | AI interface; persisted application database |
+| Open Terminal | 8000 | Execution capability; separate key and persistent home |
+| Homepage | 3003 | Dashboard configuration and images |
+| Homelab API | 8091 | Thirteen diagnostic/retrieval GET operations |
+| Qdrant | 6333 | Vectors, text and provenance |
+| Prometheus | 9090 | Metrics data and generated scrape configuration |
+| Node Exporter | 9100 | Host metrics; host network/PID context |
+| Grafana | 3000 | Dashboards and settings |
+| Uptime Kuma | 3001 | Availability checks/settings |
+| Beszel | 8090 | Monitoring hub and shared agent socket |
+| Beszel Agent | Unix socket | Host monitoring and Docker access |
 
-The eleven-container count includes the separate monitoring components and excludes services outside core-services. The ingestion watcher is a systemd unit, not another Docker container.
+The separate `qwen3-embedding` container on ai-worker serves port 8080 and persists its model cache. It is outside the eleven-container core count. The ingestion watcher is a systemd unit, not a container.
 
-VM 100, VM 102, and LXC 101 had onboot enabled in the morning audit. Eight inspected application containers used `unless-stopped`. Those settings do not prove a successful recovery of the current topology.
+Pi-hole runs in LXC 101; its recorded versions are core 6.4.3, web 6.6 and FTL 6.7.1. A local DNS query succeeded during packaging. This does not verify filtering or DHCP lease delivery for every client. QEMU Guest Agent is active and responsive on ai-worker.
 
-Version tags such as `main` and `latest` do not establish that installed images are current upstream. Secrets and deployment-specific configuration remain outside this repository.
+Installed digests are in the [manifest](../release/manifest.json). Main-PC Ollama and ComfyUI are external dependencies documented in [Local AI Lab](https://github.com/soonerbear22-ux/local-ai-lab). Alert delivery and full voice recovery are outside V1 acceptance.

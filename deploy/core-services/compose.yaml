@@ -1,0 +1,139 @@
+name: basecamp-v1
+services:
+  qdrant:
+    image: qdrant/qdrant@sha256:12364fe851b9f17356fc88189fc06d1b521262e04659ec7345975b00c9246a10
+    container_name: qdrant
+    restart: unless-stopped
+    ports:
+    - ${CORE_BIND_ADDRESS:-127.0.0.1}:6333:6333
+    volumes:
+    - ${QDRANT_STORAGE:?Set QDRANT_STORAGE in your private site.env}:/qdrant/storage
+  open-webui:
+    image: ghcr.io/open-webui/open-webui@sha256:8b432fe0a65b91116afc7961365c6cca5379cc923171386a96691f3471f3cae9
+    container_name: open-webui
+    restart: unless-stopped
+    ports:
+    - ${CORE_BIND_ADDRESS:-127.0.0.1}:3002:8080
+    volumes:
+    - ${DATA_ROOT:-/opt/basecamp/data}/open-webui:/app/backend/data
+    environment:
+      WEBUI_SECRET_KEY: ${WEBUI_SECRET_KEY:?Set WEBUI_SECRET_KEY in your private site.env}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:?Set OLLAMA_BASE_URL in your private site.env}
+  open-terminal:
+    image: ghcr.io/open-webui/open-terminal@sha256:3d52176700f2442e20556ef129ae980613389be773e269cf7fa0118f3b55669d
+    container_name: open-terminal
+    restart: unless-stopped
+    ports:
+    - ${CORE_BIND_ADDRESS:-127.0.0.1}:8000:8000
+    volumes:
+    - ${DATA_ROOT:-/opt/basecamp/data}/open-terminal:/home/user
+    environment:
+      OPEN_TERMINAL_API_KEY: ${OPEN_TERMINAL_API_KEY:?Set OPEN_TERMINAL_API_KEY in your private site.env}
+  homepage:
+    image: ghcr.io/gethomepage/homepage@sha256:643bd0be730d40f69d58028a55d1a896739333e8815786df42bc97f109ecbe61
+    container_name: homepage
+    restart: unless-stopped
+    ports:
+    - ${CORE_BIND_ADDRESS:-127.0.0.1}:3003:3000
+    volumes:
+    - ${DATA_ROOT:-/opt/basecamp/data}/homepage/config:/app/config
+    - ${DATA_ROOT:-/opt/basecamp/data}/homepage/images:/app/public/images
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: ${HOMEPAGE_ALLOWED_HOSTS:?Set HOMEPAGE_ALLOWED_HOSTS in your private site.env}
+  prometheus:
+    image: prom/prometheus@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+    - ${CORE_BIND_ADDRESS:-127.0.0.1}:9090:9090
+    volumes:
+    - ../../config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    - ${DATA_ROOT:-/opt/basecamp/data}/prometheus:/prometheus
+  grafana:
+    image: grafana/grafana@sha256:ac461fb352abc50da10a51c7d02462e9c05488f11f53f14b3ad79a8145f638a0
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+    - ${CORE_BIND_ADDRESS:-127.0.0.1}:3000:3000
+    volumes:
+    - ${DATA_ROOT:-/opt/basecamp/data}/grafana:/var/lib/grafana
+    depends_on:
+    - prometheus
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD in your private site.env}
+  node-exporter:
+    image: prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0
+    container_name: node-exporter
+    restart: unless-stopped
+    volumes:
+    - /:/host:ro,rslave
+    network_mode: host
+    pid: host
+    command:
+    - --path.rootfs=/host
+    - --web.listen-address=${NODE_EXPORTER_LISTEN:?Set NODE_EXPORTER_LISTEN in your private site.env}
+  uptime-kuma:
+    image: louislam/uptime-kuma@sha256:c74379ac4509ce2d2c2633f509e67003ee2e45b6e995c5e43fc101f45a0e1fbe
+    container_name: uptime-kuma
+    restart: unless-stopped
+    ports:
+    - ${CORE_BIND_ADDRESS:-127.0.0.1}:3001:3001
+    volumes:
+    - ${DATA_ROOT:-/opt/basecamp/data}/uptime-kuma:/app/data
+  beszel:
+    image: henrygd/beszel@sha256:897e807a065adf8e89e30ae0cd79d1f5e38fe84ccaffbc418bde9d3cdca4eacc
+    container_name: beszel
+    restart: unless-stopped
+    ports:
+    - ${CORE_BIND_ADDRESS:-127.0.0.1}:8090:8090
+    volumes:
+    - ${DATA_ROOT:-/opt/basecamp/data}/beszel:/beszel_data
+    - ${DATA_ROOT:-/opt/basecamp/data}/beszel-socket:/beszel_socket
+    environment:
+      APP_URL: ${BESZEL_APP_URL:?Set BESZEL_APP_URL in your private site.env}
+  beszel-agent:
+    image: henrygd/beszel-agent@sha256:765e3d4a087c4bcbf6b78ed0f1dfdcd669c4bf6ad5789a832d2944603ae7fd08
+    container_name: beszel-agent
+    restart: unless-stopped
+    volumes:
+    - ${DATA_ROOT:-/opt/basecamp/data}/beszel-socket:/beszel_socket
+    - ${DATA_ROOT:-/opt/basecamp/data}/beszel-agent:/var/lib/beszel-agent
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    network_mode: host
+    environment:
+      KEY: ${BESZEL_KEY:?Set BESZEL_KEY in your private site.env}
+      TOKEN: ${BESZEL_TOKEN:?Set BESZEL_TOKEN in your private site.env}
+      HUB_URL: http://localhost:8090
+      LISTEN: /beszel_socket/beszel.sock
+  homelab-api:
+    build:
+      context: ../..
+      dockerfile: deploy/core-services/Dockerfile.api
+    image: basecamp-homelab-api:v1.0.0
+    container_name: homelab-api
+    restart: unless-stopped
+    pid: host
+    ports:
+    - ${CORE_BIND_ADDRESS:-127.0.0.1}:8091:8091
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - ${PVE_CA_DIRECTORY:?Set PVE_CA_DIRECTORY in your private site.env}:/run/pve-ca:ro
+    environment:
+      PROMETHEUS_URL: http://prometheus:9090
+      PROMETHEUS_INSTANCE: ${CORE_NODE_EXPORTER_TARGET:?Set CORE_NODE_EXPORTER_TARGET in your private site.env}
+      PROMETHEUS_JOB: core-services
+      HOMELAB_HOST: core-services
+      PVE_URL: ${PVE_URL:?Set PVE_URL in your private site.env}
+      PVE_TOKEN_ID: ${PVE_TOKEN_ID:?Set PVE_TOKEN_ID in your private site.env}
+      PVE_TOKEN: ${PVE_TOKEN:?Set PVE_TOKEN in your private site.env}
+      PVE_CA_BUNDLE: /run/pve-ca/ca.crt
+      EMBEDDING_URL: ${EMBEDDING_URL:?Set EMBEDDING_URL in your private site.env}
+      QDRANT_URL: http://qdrant:6333
+      QDRANT_COLLECTION: homelab_knowledge
+      AI_WORKER_LAN_HOST: ${AI_WORKER_LAN_HOST:?Set AI_WORKER_LAN_HOST in your private site.env}
+      AI_WORKER_OVERLAY_HOST: ${AI_WORKER_OVERLAY_HOST:?Set AI_WORKER_OVERLAY_HOST in your private site.env}
+      AI_WORKER_EMBEDDING_URL: ${AI_WORKER_EMBEDDING_URL:?Set AI_WORKER_EMBEDDING_URL in your private site.env}
+    depends_on:
+    - prometheus
+    - qdrant

@@ -1,50 +1,48 @@
-# Basecamp infrastructure diagram
+# Basecamp V1 infrastructure
 
-[Overview](../README.md) · [Architecture](../docs/architecture.md)
+[Overview](../README.md) · [Architecture](../docs/architecture.md) · [Rebuild](../docs/rebuild.md)
 
-Logical deployment as reviewed September 26, 2026. Lines express dependencies, not firewall policy or physical cabling.
+Logical deployment at the V1 freeze. Lines show dependencies, not complete firewall rules or physical cabling.
 
 ```mermaid
 flowchart TB
-    Clients["Authorized clients"] --> Access["Private Tailscale access"]
-    Access --> WebUI
-    Access --> Dashboard
-    subgraph Basecamp["BASECAMP - Proxmox"]
-        subgraph Core["VM 100 - core-services"]
-            WebUI["Open WebUI"]
-            Terminal["Open Terminal"]
-            Dashboard["Homepage"]
-            API["Homelab API - 13 operations"]
-            Monitor["Prometheus / Grafana / Kuma / Beszel"]
-            Inbox["Samba knowledge inbox"]
-            Ingest["systemd ingestion"]
-            Qdrant["Qdrant"]
-            Inbox --> Ingest
-            WebUI --> API
-            WebUI --> Terminal
-            API --> Qdrant
-            API --> Monitor
-            Ingest --> Qdrant
-        end
-        subgraph Worker["VM 102 - ai-worker"]
-            GPU["RTX 3060 passthrough"]
-            Embed["Qwen3-Embedding-4B / TEI"]
-            GPU --- Embed
-        end
-        DNS["LXC 101 - Pi-hole"]
-        Backup["Daily backups: VM 100 and LXC 101"]
-        Disk["Large HDD - shared storage and backup filesystem"]
-        Backup --> Disk
-        API --> Embed
-        Ingest --> Embed
+    CLIENT[Authorized clients] --> ACCESS[LAN and private Tailscale access]
+    subgraph BASE[Basecamp - Proxmox]
+      subgraph CORE[VM 100 - core-services]
+        UI[Open WebUI]
+        APPS[Homepage and Open Terminal]
+        MON[Prometheus, Grafana, Kuma, Beszel and agents]
+        API[Homelab API - 13 operations]
+        INBOX[Authenticated Samba inbox]
+        INGEST[systemd watcher and flock ingestion]
+        QDRANT[Qdrant - knowledge vectors]
+        INBOX --> INGEST
+        INGEST --> QDRANT
+        UI --> API
+        API --> QDRANT
+        API --> MON
+      end
+      subgraph WORKER[VM 102 - ai-worker]
+        GPU[RTX 3060 passthrough]
+        TEI[Qwen3-Embedding-4B - 2560 dimensions]
+        GPU --> TEI
+      end
+      DNS[LXC 101 - Pi-hole DNS and site DHCP]
+      BACKUP[Daily guest backups - 100, 101, 102]
+      DISK[Bulk HDD - shared backup failure domain]
+      BACKUP --> DISK
     end
-    subgraph PC["Main Windows PC"]
-        Ollama["Ollama chat inference"]
-        Comfy["ComfyUI / FLUX image generation"]
+    subgraph PC[Main Windows PC]
+      OLLAMA[Ollama chat inference]
+      COMFY[ComfyUI image generation]
     end
-    WebUI --> Ollama
-    WebUI --> Comfy
-    Clients --> Inbox
+    ACCESS --> UI
+    ACCESS --> APPS
+    ACCESS --> DNS
+    UI --> OLLAMA
+    UI --> COMFY
+    INGEST --> TEI
+    API --> TEI
 ```
 
-The Basecamp GPU now serves embeddings. Voice is omitted from the current deployment diagram because its earlier test environment has not been revalidated. ai-worker is absent from the inspected backup job. No addresses, credentials, or private service URLs are shown.
+All three guests and all eleven core containers recovered in the recorded reboot test. Backup archives exist for each guest; isolated restoration and off-host protection remain unverified. Voice is outside this V1 acceptance diagram. No private addresses or credentials are shown.

@@ -1,0 +1,78 @@
+{
+  "captured_at_utc": "2026-09-27T01:13:46.248030+00:00",
+  "scope": "Read-only live verification; no infrastructure changes during packaging.",
+  "guests": {
+    "expected": 3,
+    "running": 3,
+    "onboot_enabled": [
+      100,
+      101,
+      102
+    ],
+    "ai_worker_guest_agent": "active"
+  },
+  "core_containers": {
+    "expected": 11,
+    "running": 11,
+    "restart_policy": "unless-stopped"
+  },
+  "api": {
+    "openapi_get_operations": 13,
+    "audit_requested": 7,
+    "audit_retrieved": 7,
+    "audit_complete": true
+  },
+  "knowledge": {
+    "healthy": true,
+    "dimensions": 2560,
+    "qdrant_status": "green",
+    "points": 244,
+    "distinct_sources": 34,
+    "includes_retained_validation_sources": true,
+    "indexed_vectors_count": 0,
+    "semantic_query_succeeded": true,
+    "watcher_active": true
+  },
+  "backups": {
+    "enabled": true,
+    "schedule": "daily",
+    "mode": "snapshot",
+    "compression": "zstd",
+    "keep_last": 7,
+    "guest_ids": [
+      100,
+      101,
+      102
+    ],
+    "archive_observed_for_each_guest": true,
+    "same_physical_disk_as_bulk_storage": true,
+    "off_host_copy_verified": false,
+    "isolated_restore_test_verified": false
+  },
+  "operator_recorded_acceptance": {
+    "source": "September 26 completion session; shell output and operator records",
+    "host_reboot_recovery": "passed",
+    "automatic_ingestion_with_flock": "passed; temporary lock-test document removed"
+  },
+  "packaging_did_not_repeat": [
+    "Host reboot",
+    "Ingestion mutation",
+    "Backup restoration",
+    "Clean-room installation"
+  ],
+  "privacy": "Aggregate evidence only; no private endpoints, source text, secrets or raw logs.",
+  "release_runtime_verifier": {
+    "operations_returned_json": 13,
+    "expected_operations": 13,
+    "knowledge_healthy": true,
+    "points": 244,
+    "audit_complete": true,
+    "failures": []
+  },
+  "repository_validation": {
+    "tests_passed": 23,
+    "compose_definitions_passed": 2,
+    "prometheus_config_passed": true,
+    "existing_history_text_blobs_scanned": 28
+  }
+}

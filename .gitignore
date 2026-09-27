@@ -1,0 +1,31 @@
+# Private site settings and generated configuration
+.env
+.env.*
+!.env.example
+site.env
+*.local.env
+config/prometheus.yml
+private/
+secrets/
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+# Downloaded, checksum-verified API dependency
+vendor/
+# Runtime state, backups, models and logs
+data/
+models/
+*.log
+*.db
+*.sqlite*
+*.vma*
+*.tar*
+*.zst
+*.safetensors
+*.gguf
+__pycache__/
+.pytest_cache/
+.venv/
+*.pyc

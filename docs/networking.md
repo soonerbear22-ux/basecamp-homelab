@@ -18,7 +18,7 @@ The diagram is logical: it does not specify physical ports, subnet routes, firew
 
 ## Access paths
 
-**Local access:** clients reach local infrastructure through the home network. Pi-hole provides DNS filtering, but exact client DNS distribution, upstream resolvers, and fallback behavior are not captured in the repository.
+**Local access:** clients reach local infrastructure through the home network. Pi-hole provides DNS filtering and its DHCP feature is enabled in the final capture. Lease ranges, reservations, upstream resolvers and client fallback behavior remain private and are not reproduced by this repository.
 
 **Remote access:** Tailscale connects authorized devices to homelab endpoints. The original project record reports administration from Windows, a laptop, iPhone, iPad, and Outpost. Selected services use Tailscale HTTPS endpoints to provide consistent service addresses at home and away.
 
@@ -30,9 +30,9 @@ Persistent network addressing is listed as prior completed work. The mechanism, 
 
 Use logical roles such as `BASECAMP`, `core-services`, and `DNS service` in public diagrams. Avoid publishing actual endpoint URLs in screenshots or copied command output.
 
-## Validation to record next
+## Additional access validation
 
-The following is a proposed validation plan, not a test result:
+V1 recorded DNS recovery after reboot and a successful local DNS query during packaging. The following broader access checks remain a proposed plan, not completed test results:
 
 | Check | Evidence to capture privately | Public summary |
 | --- | --- | --- |
@@ -56,3 +56,9 @@ Before a network change, record the working baseline and a recovery access path 
 The knowledge inbox is available through an authenticated Samba share mapped on Windows. Tailscale Serve mappings were inspected for production WebUI, dashboard, and monitoring access. The old voice-test mapping remains configured even though its historical container was absent from the morning inventory; a saved route is not evidence of an available backend.
 
 The latest combined audit checks ai-worker TCP reachability and the embedding HTTP health route separately. A TCP connection does not establish authenticated SSH access, and LAN HTTP health does not independently test the overlay HTTP path.
+
+## Public rebuild bindings
+
+The reference core Compose project gives containers service-name DNS. Host-side ingestion uses the loopback-published Qdrant port; container clients use `qdrant:6333`. TEI remains on the separate worker. Node Exporter's host-network listener must be reachable from Prometheus, and its target label must match the API's `PROMETHEUS_INSTANCE` input.
+
+Published ports default to loopback; choose required private interfaces and review host/firewall policy before enabling remote access. Configure Tailscale identities and HTTPS routes locally. Never copy the live installation's private address plan into Git. See the [rebuild order](rebuild.md).

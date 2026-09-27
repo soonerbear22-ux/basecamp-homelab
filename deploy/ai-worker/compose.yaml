@@ -1,0 +1,31 @@
+name: basecamp-embeddings-v1
+services:
+  qwen3-embedding:
+    image: ghcr.io/huggingface/text-embeddings-inference@sha256:bee0bdb887096229add91b6fdfcf95258c12eb9180e90dc86f3b4b25b86fc613
+    container_name: qwen3-embedding
+    restart: unless-stopped
+    ports:
+    - ${AI_WORKER_BIND_ADDRESS:?Set AI_WORKER_BIND_ADDRESS in your private site.env}:8080:80
+    volumes:
+    - ${EMBEDDING_MODEL_CACHE:?Set EMBEDDING_MODEL_CACHE in your private site.env}:/data
+    command:
+    - --model-id
+    - Qwen/Qwen3-Embedding-4B
+    - --revision
+    - 5cf2132abc99cad020ac570b19d031efec650f2b
+    - --dtype
+    - float16
+    - --max-batch-tokens
+    - '8192'
+    - --max-client-batch-size
+    - '8'
+    - --auto-truncate
+    - 'true'
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: 1
+            capabilities:
+            - gpu

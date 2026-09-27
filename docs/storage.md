@@ -12,8 +12,8 @@ VM 100 and VM 102 each have a 100 GB system disk on local-lvm. Pi-hole LXC 101 h
 
 Persisted data includes Open WebUI, Grafana, Prometheus, Uptime Kuma, Beszel, Homepage configuration/images, Qdrant, and the knowledge source/state tree.
 
-The inspected Qdrant storage is outside the common application-data directory. Backing up only that common directory would omit Qdrant and the knowledge tree. Public documentation identifies these boundaries by purpose without publishing the host's private layout.
+The inspected Qdrant storage is outside the common application-data directory. Backing up only that directory would omit Qdrant and the knowledge tree. The public templates use generic reproducible paths: `/opt/basecamp/data`, `/opt/basecamp/compose/qdrant/storage`, `/opt/basecamp/knowledge`, and the worker's model cache. No private storage identities or device serials are included.
 
 ## Remaining work
 
-A named storage destination and a persistent mount do not establish backup consistency or tested restoration. Centralized NAS service, independent off-host copies, and isolated restore validation are not claimed by this inventory.
+A daily job and observed archives now cover all three guests. A named destination, mount or successful archive still does not establish application consistency or tested restoration. Independent off-host copies and isolated restore validation are not claimed by this inventory.

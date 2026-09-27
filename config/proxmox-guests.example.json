@@ -1,0 +1,8 @@
+{
+  "note": "Reference settings, not an importable backup. Choose unused guest IDs, storage, bridge, addresses and PCI IDs locally.",
+  "guests": [
+    {"id": 100, "name": "core-services", "type": "qemu", "os": "Ubuntu 24.04 LTS", "cores": 4, "memory_mib": 8192, "disk_gib": 100, "cpu": "host", "machine": "q35", "bios": "ovmf", "guest_agent": true, "onboot": true},
+    {"id": 101, "name": "pihole", "type": "unprivileged_lxc", "os": "Debian", "cores": 1, "memory_mib": 1024, "swap_mib": 512, "disk_gib": 8, "onboot": true},
+    {"id": 102, "name": "ai-worker", "type": "qemu", "os": "Ubuntu 24.04 LTS", "cores": 4, "memory_mib": 12288, "disk_gib": 100, "cpu": "host", "machine": "q35", "bios": "ovmf", "balloon": 0, "gpu": "RTX 3060 12 GB passthrough", "guest_agent": true, "onboot": true}
+  ]
+}

@@ -1,23 +1,32 @@
-# Knowledge ingestion and retrieval
+# Knowledge pipeline
 
-[Overview](../README.md) · [Local AI detail](https://github.com/soonerbear22-ux/local-ai-lab/blob/main/docs/knowledge.md)
+[Overview](../README.md) · [Rebuild](rebuild.md) · [Operations](operations.md)
 
-## Implemented path
+The final direct inventory contains **34 distinct source names and 244 points**, including retained validation documents. This supersedes the earlier two-source/101-point observation. Private source names and content are not distributed.
 
-Windows mapped Samba inbox → systemd watcher → document extraction and chunking → Qwen3-Embedding-4B on ai-worker → Qdrant on core-services → Homelab API semantic search.
+## Processing contract
 
-The inspected ingester accepts Markdown, text, PDF, and DOCX. It uses heading-aware sections, a 1400-character target, 200-character overlap for long sections, stable source filenames, and SHA-256 tracking. PDF extraction does not perform OCR; the inspected DOCX path does not extract table cells.
+1. Place a completed document in the authenticated inbox.
+2. A `DirectoryNotEmpty` path unit activates a oneshot service after a three-second delay.
+3. `flock -n` acquires the writable state-directory lock before ingestion.
+4. Extract `.md`, `.txt`, `.pdf` or `.docx`; heading-aware chunks target 1400 characters with 200-character overlap.
+5. Generate 2560-dimensional embeddings and store them in Qdrant's `homelab_knowledge` Cosine collection.
+6. Persist provenance, update filename/SHA-256 state, and move the successful source to `processed`.
 
-## Recorded expansion and current discrepancy
+Payloads contain text, source, section, chunk ordinal/count, file type, digest and timestamp. Identical content under the same filename is skipped. Changed documents are fully embedded before replacement begins.
 
-At 08:57 UTC on September 26, the expansion report recorded 27 added documents / 135 chunks, removal of one test point, 235 total points, and 28/28 expected-source retrieval checks passing in the top five.
+Delete and upsert are separate database requests. Failure between them can remove an old index without completing the replacement. State writes are not transactional with Qdrant. Compare state, processed files and database inventory before retrying. The public source retains this behavior and corrects an error message that previously overclaimed preservation.
 
-At 21:42 UTC, a fresh audit observed 101 points with successful embedding and semantic search. A direct source inventory then found only `homelab-master.md` (19 points) and `homelab-operations.md` (82 points). The 27 runbook files remain in the processed folder but are not in the current indexed-source inventory.
+## Locking and transfer completion
 
-Both observations are retained. The intervening change and whether it was intentional have not been established. The earlier retrieval results are historical, not proof that those runbooks are currently searchable.
+The final lock is `/opt/basecamp/knowledge/state/ingest.lock`. An earlier lock under `/run` failed under the service user; moving it to the writable state directory fixed the permission failure. The completion session tested automatic ingestion with the lock and removed its temporary test document afterward.
 
-## Operational limits
+Every manual ingest must acquire the same lock. This does not serialize unrelated database maintenance or Samba writes. The three-second delay is a mitigation, not a transfer-completion protocol: finish writing outside the watched inbox, then move the file into it on the same filesystem. Quarantine failing/unsupported files outside the inbox to avoid repeated path activation; preserve the source.
 
-The watcher remains active. Its three-second pre-start delay followed a successful Samba test, but is not a universal transfer-completion guarantee.
+## Acceptance and limits
 
-Replacement embeds new chunks before deleting the old source, then performs a separate upsert. Failure after deletion can leave the previous source absent. Reconcile source files, state, database payloads, and actual retrieval before corrective action. No reingestion, deletion, or infrastructure change was performed for this portfolio refresh.
+Use the synthetic [retrieval sample](../knowledge/samples/retrieval-check.md) in a fresh test corpus. A public rebuild has its own point count; it does not inherit the private 244-point corpus.
+
+Check actual embeddings, collection dimensions/distance, source provenance, semantic retrieval and source inventory. A green small collection can return results with `indexed_vectors_count: 0`; that field alone does not prove failure. A passing health query does not prove corpus completeness or answer quality.
+
+PDF extraction has no OCR; DOCX extraction reads paragraphs/headings, not tables. Empty or failed documents may remain in the inbox. Invalid state JSON currently falls back to an empty state: preserve and repair it before another ingest. These are documented V1 limitations.

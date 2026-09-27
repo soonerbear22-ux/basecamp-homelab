@@ -1,0 +1,8 @@
+**
+!deploy/
+!deploy/core-services/
+!deploy/core-services/Dockerfile.api
+!deploy/core-services/requirements-api.txt
+!vendor/
+!vendor/homelab-api/
+!vendor/homelab-api/app.py

@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch Basecamp knowledge inbox
+
+[Path]
+DirectoryNotEmpty=/opt/basecamp/knowledge/inbox
+Unit=homelab-knowledge-ingest.service
+
+[Install]
+WantedBy=multi-user.target

@@ -1,23 +1,31 @@
-# Backup coverage and recovery
+# Backup and recovery
 
-[Overview](../README.md) · [Storage](storage.md)
+[Overview](../README.md) · [Storage](storage.md) · [Operations](operations.md)
 
-## Implemented and observed September 26
+## Final coverage
 
-The inspected enabled Proxmox job runs daily in snapshot mode, retains the last seven backups, and explicitly includes core-services VM 100 and Pi-hole LXC 101. Archives dated September 22–26 were listed at the configured destination.
+The enabled Proxmox job runs **daily**, in **snapshot** mode, with **Zstandard** compression and **keep-last=7**. Its explicit guest list is **100, 101, 102**. Archives exist for all three, including the first ai-worker backup from the completion session. The [reference stanza](../config/proxmox-backup.example.cfg) omits the private job identity.
 
-VM 102 ai-worker is absent from this job, and no ai-worker archive appeared in that destination's listing. Backups elsewhere have not been established.
+VM 100's disk includes application data, Qdrant and knowledge state; LXC 101 contains Pi-hole; VM 102 contains the embedding runtime and model cache. The observed VM 100/Pi-hole archives predate the final evening changes. Verify the next successful scheduled run before relying on an archive for that exact final state.
 
-## Limits
+`basecamp-storage` and `basecamp-backups` share one HDD/filesystem. They are not independent copies. Off-host protection, recovery-time objectives and an isolated restore test remain unverified.
 
-- The backup destination shares Basecamp's large physical disk with the other named storage destination.
-- An archive existing does not prove that it restores successfully.
-- The inspected September 26 core-services archive predates the morning knowledge expansion.
-- GPU-worker recovery needs VM configuration, EFI state, system disk, passthrough settings, and the embedding deployment materials.
-- Current whole-lab reboot recovery and voice-service startup remain unverified.
+## Before maintenance
 
-## Proposed restore acceptance
+Check enabled status, guest scope, available capacity, last successful task, and archive timestamps through Proxmox or `pvesm list basecamp-backups`. Keep final private environment/CA settings, Pi-hole exports, WebUI settings and knowledge source/state backups outside GitHub.
 
-Restore to an isolated target. Validate application data, guest startup, DNS behavior, a real embedding request, semantic search, and a controlled ingestion against the isolated database. Record the archive used and any manual intervention.
+Preserve Qdrant storage or a validated snapshot **together with** knowledge sources, processed files and `state/ingested.json`. Pause ingestion for an application-consistent copy. A filesystem copy of a running database is not automatically consistent. A successful guest snapshot job proves an archive exists; it does not prove restoration.
 
-This procedure is a plan, not a completed restore test. Earlier Raspberry Pi/Windows power-recovery observations do not validate today's three-guest Basecamp topology.
+## Isolated restore drill — not yet completed
+
+1. Select a successful archive and an unused test guest ID with sufficient storage. Never restore over a live guest as a test.
+2. Restore with networking disconnected or isolated and autostart disabled.
+3. Remove duplicate addressing/identities before connecting a test network. Keep restored Pi-hole DHCP isolated from the production LAN. Review GPU passthrough so two guests cannot claim the same device.
+4. Boot and check filesystems, application login and data. Restore a consistent Qdrant/knowledge pair and run a known query. Test embeddings only with a compatible available GPU/runtime.
+5. Record archive/date, recovery time, results and discrepancies privately; publish sanitized conclusions. Keep production running until a deliberate cutover.
+
+## Rollback
+
+Record deployed commits/digests and preserve pre-change data before updates. Roll back code/configuration only when the previous version supports the current data format. For a database migration, first restore matching pre-change data in isolation. Changing an image tag alone is not a safe database downgrade.
+
+Host reboot recovery passed in the completion session. That is distinct from restoring a lost or damaged guest from backup.

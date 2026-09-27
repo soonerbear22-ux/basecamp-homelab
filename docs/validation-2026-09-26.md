@@ -1,4 +1,6 @@
-# Validation record — September 26, 2026
+> Historical observation, superseded by [V1 validation](validation-v1.md). The later completion work restored the corpus, added ai-worker backup coverage and passed reboot/ingestion acceptance.
+
+# Validation record â€” September 26, 2026
 
 [Overview](../README.md)
 

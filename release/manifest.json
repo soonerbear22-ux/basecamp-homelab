@@ -1,0 +1,66 @@
+{
+  "release": "v1.0.0",
+  "release_date_local": "2026-09-26",
+  "capture_utc": "2026-09-27T01:13:46.248030+00:00",
+  "platform": "linux/amd64",
+  "images": {
+    "qdrant": "qdrant/qdrant@sha256:12364fe851b9f17356fc88189fc06d1b521262e04659ec7345975b00c9246a10",
+    "homepage": "ghcr.io/gethomepage/homepage@sha256:643bd0be730d40f69d58028a55d1a896739333e8815786df42bc97f109ecbe61",
+    "beszel-agent": "henrygd/beszel-agent@sha256:765e3d4a087c4bcbf6b78ed0f1dfdcd669c4bf6ad5789a832d2944603ae7fd08",
+    "open-webui": "ghcr.io/open-webui/open-webui@sha256:8b432fe0a65b91116afc7961365c6cca5379cc923171386a96691f3471f3cae9",
+    "open-terminal": "ghcr.io/open-webui/open-terminal@sha256:3d52176700f2442e20556ef129ae980613389be773e269cf7fa0118f3b55669d",
+    "beszel": "henrygd/beszel@sha256:897e807a065adf8e89e30ae0cd79d1f5e38fe84ccaffbc418bde9d3cdca4eacc",
+    "prometheus": "prom/prometheus@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0",
+    "node-exporter": "prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+    "grafana": "grafana/grafana@sha256:ac461fb352abc50da10a51c7d02462e9c05488f11f53f14b3ad79a8145f638a0",
+    "uptime-kuma": "louislam/uptime-kuma@sha256:c74379ac4509ce2d2c2633f509e67003ee2e45b6e995c5e43fc101f45a0e1fbe",
+    "qwen3-embedding": "ghcr.io/huggingface/text-embeddings-inference@sha256:bee0bdb887096229add91b6fdfcf95258c12eb9180e90dc86f3b4b25b86fc613"
+  },
+  "api_base_image": {
+    "tag": "python:3.12-slim",
+    "pinned": "python:3.12-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f",
+    "basis": "Resolved for the public rebuild recipe; original live API base image digest was unavailable."
+  },
+  "api_source": {
+    "repository": "soonerbear22-ux/homelab-api",
+    "commit": "13e8d5cd4bae0fe06087cdf161c720f6aef8848f",
+    "files": {
+      "app.py": {
+        "sha256": "c2a631c92c0f31e1c722ae73be778933dbcdd6f797e7db961c591076c710c417"
+      },
+      "tests/test_api.py": {
+        "sha256": "882cfd9aa0acc98a40cb6056bdaf20783c1ce64f3420f54918aa1133ac1defdd"
+      }
+    }
+  },
+  "embedding": {
+    "model": "Qwen/Qwen3-Embedding-4B",
+    "revision": "5cf2132abc99cad020ac570b19d031efec650f2b",
+    "dimensions": 2560,
+    "dtype": "float16",
+    "max_batch_tokens": 8192,
+    "max_client_batch_size": 8
+  },
+  "observed": {
+    "pve_manager": "9.2.20",
+    "pve_kernel": "7.0.14-19-pve",
+    "core_os": "Ubuntu 24.04.5 LTS",
+    "docker": "29.8.1",
+    "compose": "5.5.1",
+    "ingestion_python": "3.12.3",
+    "live_api_python": "3.12.14",
+    "gpu_driver": "595.91.07",
+    "pihole_core": "6.4.3",
+    "pihole_web": "6.6",
+    "pihole_ftl": "6.7.1"
+  },
+  "public_adaptations": [
+    "Digest and model revision pins replace floating references.",
+    "Core Compose projects consolidated into one explicitly named project.",
+    "Addresses, service identities and credentials are local inputs.",
+    "API uses the published environment-driven source with certificate verification.",
+    "Ingestion endpoints and base directory are environment-driven; service user is basecamp.",
+    "Port bindings are explicit; examples default to loopback.",
+    "Private databases, knowledge sources, dashboards and credentials are not included."
+  ]
+}
