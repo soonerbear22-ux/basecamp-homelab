@@ -42,3 +42,7 @@ All three guests and eleven containers recovered in the recorded V1 reboot test.
 Record the current release/digests, verify backup timestamps and preserve private inputs. Update one dependency at a time in a test environment; do not use unreviewed floating image updates. Re-run repository checks, affected regression tests and runtime acceptance. Apply only after checking schema/data compatibility. Follow the [backup runbook](backup-recovery.md) for rollback; a database downgrade may require matched data restoration.
 
 The reference Compose file uses the same container names as the live lab. It is a rebuild artifact, not an instruction to start a second copy on the frozen host.
+
+## Post-V1 operating record
+
+See the [September 27 current state](current-state.md), [incident resolutions](changes/2026-09-27.md), and [Sentinel runbook](sentinel.md) for workstation naming, physical power work, independent DNS/monitoring, mobile access and backup validation. The V1 measurements above remain dated evidence. Sentinel backups to Basecamp do not establish off-host protection for Basecamp guest backups.

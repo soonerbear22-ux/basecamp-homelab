@@ -1,0 +1,50 @@
+{
+  "containers": {
+    "beszel": {
+      "image_id": "sha256:897e807a065adf8e89e30ae0cd79d1f5e38fe84ccaffbc418bde9d3cdca4eacc",
+      "restart_policy": "unless-stopped"
+    },
+    "beszel-agent": {
+      "image_id": "sha256:765e3d4a087c4bcbf6b78ed0f1dfdcd669c4bf6ad5789a832d2944603ae7fd08",
+      "restart_policy": "unless-stopped"
+    },
+    "grafana": {
+      "image_id": "sha256:ac461fb352abc50da10a51c7d02462e9c05488f11f53f14b3ad79a8145f638a0",
+      "restart_policy": "unless-stopped"
+    },
+    "homelab-api": {
+      "image_id": "sha256:e35e16b2f13bf280649838e6f3f0e3038a504c2a2ecb1c7bbba192898b827cb1",
+      "restart_policy": "unless-stopped"
+    },
+    "homepage": {
+      "image_id": "sha256:643bd0be730d40f69d58028a55d1a896739333e8815786df42bc97f109ecbe61",
+      "restart_policy": "unless-stopped"
+    },
+    "node-exporter": {
+      "image_id": "sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+      "restart_policy": "unless-stopped"
+    },
+    "open-terminal": {
+      "image_id": "sha256:3d52176700f2442e20556ef129ae980613389be773e269cf7fa0118f3b55669d",
+      "restart_policy": "unless-stopped"
+    },
+    "open-webui": {
+      "image_id": "sha256:8b432fe0a65b91116afc7961365c6cca5379cc923171386a96691f3471f3cae9",
+      "restart_policy": "unless-stopped"
+    },
+    "prometheus": {
+      "image_id": "sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0",
+      "restart_policy": "unless-stopped"
+    },
+    "qdrant": {
+      "image_id": "sha256:12364fe851b9f17356fc88189fc06d1b521262e04659ec7345975b00c9246a10",
+      "restart_policy": "unless-stopped"
+    },
+    "uptime-kuma": {
+      "image_id": "sha256:c74379ac4509ce2d2c2633f509e67003ee2e45b6e995c5e43fc101f45a0e1fbe",
+      "restart_policy": "unless-stopped"
+    }
+  },
+  "schema_version": 1,
+  "scope": "core-services"
+}

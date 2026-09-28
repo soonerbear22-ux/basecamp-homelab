@@ -81,3 +81,7 @@ Copy this structure for a future evidence-backed case study:
 ```
 
 A useful case study explains why the evidence justified the change. Omit sensitive values rather than publishing raw logs; follow the [public-documentation rules](security.md).
+
+## Post-V1 operating record
+
+See the [September 27 current state](current-state.md), [incident resolutions](changes/2026-09-27.md), and [Sentinel runbook](sentinel.md) for workstation naming, physical power work, independent DNS/monitoring, mobile access and backup validation. The V1 measurements above remain dated evidence. Sentinel backups to Basecamp do not establish off-host protection for Basecamp guest backups.

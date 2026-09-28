@@ -1,11 +1,18 @@
-# Basecamp Homelab — V1
+# Basecamp Homelab
 
 A working infrastructure lab built and operated by Logan: Proxmox virtualization, Linux services, DNS, GPU embeddings, a searchable operations knowledge base, observability, and private remote access.
 
 **V1 freezes the completed September 26, 2026 baseline.** A final read-only capture at **01:13 UTC on September 27** confirmed three running guests, eleven running core-services containers, thirteen documented API operations, a complete seven-component audit, and a healthy knowledge pipeline. The completion session recorded recovery after a real host reboot and automatic ingestion through a single-instance lock.
 
+## Current operations
+
+The lab continued beyond V1: Citadel workstation naming, Sentinel independent DNS/monitoring and backups, equipment relocation/power work, mobile recovery access, and the saved Open WebUI connection repair are covered in the [September 27 current-state summary](docs/current-state.md) and [incident record](docs/changes/2026-09-27.md). Physical power recovery is recorded separately from still-unverified UPS telemetry and automatic shutdown.
+
+[Documentation synchronization](docs/documentation-sync.md) describes the narrow automated inventory and the review boundary. The immutable V1 tag remains the reproducible September 26 baseline.
+
 ## Engineering focus
 
+- Install and label physical network runs: a demarcation-to-closet path and four Cat6 runs to Citadel, with equipment consolidated in the closet and JDSU testing and an operator-confirmed 1,000 Mbps link rate.
 - Separate application, DNS, and GPU workloads with explicit dependencies and persistence boundaries.
 - Run GPU embeddings on Basecamp while the main PC handles chat and images.
 - Ingest documents automatically and return source-aware semantic search through a diagnostic API.

@@ -64,3 +64,7 @@ The repository gate scans current public files and reachable historical text blo
 Docker socket access remains powerful even with a read-only mount; it does not restrict Docker API operations. Host PID/root mounts and Open Terminal are separate privilege boundaries. Keep unauthenticated API/Qdrant/metrics endpoints on restricted private paths. A `GET`-only API schema does not constrain a compromised process. The loopback defaults in the public templates must be deliberately adjusted for required private reachability.
 
 The public package was validated without replacing live trust settings, credentials, access rules or application state. No fresh exposure/least-privilege audit is claimed by the release.
+
+## Post-V1 operating record
+
+See the [September 27 current state](current-state.md), [incident resolutions](changes/2026-09-27.md), and [Sentinel runbook](sentinel.md) for workstation naming, physical power work, independent DNS/monitoring, mobile access and backup validation. The V1 measurements above remain dated evidence. Sentinel backups to Basecamp do not establish off-host protection for Basecamp guest backups.

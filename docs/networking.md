@@ -62,3 +62,9 @@ The latest combined audit checks ai-worker TCP reachability and the embedding HT
 The reference core Compose project gives containers service-name DNS. Host-side ingestion uses the loopback-published Qdrant port; container clients use `qdrant:6333`. TEI remains on the separate worker. Node Exporter's host-network listener must be reachable from Prometheus, and its target label must match the API's `PROMETHEUS_INSTANCE` input.
 
 Published ports default to loopback; choose required private interfaces and review host/firewall policy before enabling remote access. Configure Tailscale identities and HTTPS routes locally. Never copy the live installation's private address plan into Git. See the [rebuild order](rebuild.md).
+
+## Post-V1 operating record
+
+The physical installation now places the gateway/modem, Basecamp, Sentinel and CyberPower UPS together in a closet. Five labeled runs were installed and operator-verified: one from the exterior demarcation through the attic to the closet (medium unspecified), and four Cat6 runs from the closet to Citadel's bedroom. The operator tested with a JDSU and confirmed a 1,000 Mbps connection rate. This is link-speed evidence, not an application throughput benchmark or an assertion of a particular cable-certification standard. Private label-to-port mappings belong in the local inventory.
+
+See the [September 27 current state](current-state.md), [incident resolutions](changes/2026-09-27.md), and [Sentinel runbook](sentinel.md) for workstation naming, physical power work, independent DNS/monitoring, mobile access and backup validation. The V1 measurements above remain dated evidence. Sentinel backups to Basecamp do not establish off-host protection for Basecamp guest backups.

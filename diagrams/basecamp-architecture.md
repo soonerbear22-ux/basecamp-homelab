@@ -1,8 +1,8 @@
-# Basecamp V1 infrastructure
+# Basecamp infrastructure
 
 [Overview](../README.md) · [Architecture](../docs/architecture.md) · [Rebuild](../docs/rebuild.md)
 
-Logical deployment at the V1 freeze. Lines show dependencies, not complete firewall rules or physical cabling.
+Logical placement updated September 27 with Citadel and Sentinel. Frozen V1 details remain at the v1.0.0 tag. Lines show dependencies, not complete firewall rules or physical cabling. See the [current state](../docs/current-state.md) for evidence limits.
 
 ```mermaid
 flowchart TB
@@ -32,10 +32,18 @@ flowchart TB
       DISK[Bulk HDD - shared backup failure domain]
       BACKUP --> DISK
     end
-    subgraph PC[Main Windows PC]
+    subgraph PC[Citadel - Windows workstation]
       OLLAMA[Ollama chat inference]
       COMFY[ComfyUI image generation]
     end
+    subgraph SENTINEL[Sentinel - independent Raspberry Pi]
+      SDNS[Pi-hole DNS]
+      SMON[Kuma and emergency status]
+      SBACKUP[Daily restricted backup transfer]
+    end
+    ACCESS --> SDNS
+    ACCESS --> SMON
+    SBACKUP --> DISK
     ACCESS --> UI
     ACCESS --> APPS
     ACCESS --> DNS

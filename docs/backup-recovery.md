@@ -29,3 +29,7 @@ Preserve Qdrant storage or a validated snapshot **together with** knowledge sour
 Record deployed commits/digests and preserve pre-change data before updates. Roll back code/configuration only when the previous version supports the current data format. For a database migration, first restore matching pre-change data in isolation. Changing an image tag alone is not a safe database downgrade.
 
 Host reboot recovery passed in the completion session. That is distinct from restoring a lost or damaged guest from backup.
+
+## Post-V1 operating record
+
+See the [September 27 current state](current-state.md), [incident resolutions](changes/2026-09-27.md), and [Sentinel runbook](sentinel.md) for workstation naming, physical power work, independent DNS/monitoring, mobile access and backup validation. The V1 measurements above remain dated evidence. Sentinel backups to Basecamp do not establish off-host protection for Basecamp guest backups.

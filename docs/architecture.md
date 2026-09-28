@@ -27,3 +27,7 @@ Chat and images depend on the main PC; embeddings depend on the Basecamp GPU. A 
 ## Public adaptations
 
 The live installation uses several Compose projects. The public recipe consolidates core services under `basecamp-v1`, preserves service names/data paths, adds digest pins and explicit bindings, and supplies site settings through environment variables. The API uses its published certificate-verifying source. A dedicated `basecamp` ingestion account replaces a personal account. Production was not migrated during packaging.
+
+## Post-V1 operating record
+
+See the [September 27 current state](current-state.md), [incident resolutions](changes/2026-09-27.md), and [Sentinel runbook](sentinel.md) for workstation naming, physical power work, independent DNS/monitoring, mobile access and backup validation. The V1 measurements above remain dated evidence. Sentinel backups to Basecamp do not establish off-host protection for Basecamp guest backups.

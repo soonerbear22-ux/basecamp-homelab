@@ -1,0 +1,8 @@
+[Unit]
+Description=Collect allowlisted Basecamp container inventory locally
+
+[Service]
+Type=oneshot
+UMask=0077
+ExecStart=/usr/bin/python3 %h/.local/lib/basecamp-inventory/collect_inventory.py --output %h/.local/state/basecamp-inventory/core-services.json
+NoNewPrivileges=true
