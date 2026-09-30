@@ -6,6 +6,9 @@ A working infrastructure lab built and operated by Logan: Proxmox virtualization
 
 ## Current operations
 
+**September 29:** [Jellyfin and media automation](docs/jellyfin.md) now occupy separate unprivileged guests, alongside the original V1 workloads. Today's checks confirmed Jellyfin health, five running media containers and saved import/upgrade refresh hooks. See the [dated update](docs/changes/2026-09-29.md) for the outstanding guest-104 backup gap and end-to-end acceptance limits.
+
+
 The lab continued beyond V1: Citadel workstation naming, Sentinel independent DNS/monitoring and backups, equipment relocation/power work, mobile recovery access, and the saved Open WebUI connection repair are covered in the [September 27 current-state summary](docs/current-state.md) and [incident record](docs/changes/2026-09-27.md). Physical power recovery is recorded separately from still-unverified UPS telemetry and automatic shutdown.
 
 [Documentation synchronization](docs/documentation-sync.md) describes the narrow automated inventory and the review boundary. The immutable V1 tag remains the reproducible September 26 baseline.
@@ -55,6 +58,7 @@ These commands validate the public package without deploying services. Deploymen
 | [Rebuild](docs/rebuild.md) · [configuration](docs/configuration.md) | Reproduction inputs and version pins |
 | [Operations](docs/operations.md) · [troubleshooting](docs/troubleshooting.md) | Acceptance, maintenance, and failure modes |
 | [Services](docs/services.md) · [networking](docs/networking.md) | Roles, ports, and access paths |
+| [Jellyfin and media automation](docs/jellyfin.md) | Placement, library refresh, troubleshooting and recovery gaps |
 | [Knowledge](docs/knowledge-pipeline.md) | Extraction, locking, embeddings, and retrieval |
 | [Storage](docs/storage.md) · [backup and recovery](docs/backup-recovery.md) | Persistence and final backup coverage |
 | [Security](docs/security.md) | Trust boundaries and publication rules |

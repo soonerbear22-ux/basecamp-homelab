@@ -17,3 +17,7 @@ The inspected Qdrant storage is outside the common application-data directory. B
 ## Remaining work
 
 A daily job and observed archives now cover all three guests. A named destination, mount or successful archive still does not establish application consistency or tested restoration. Independent off-host copies and isolated restore validation are not claimed by this inventory.
+
+## September 29 media addition
+
+[Jellyfin and media automation](jellyfin.md) add unprivileged guests 103 and 104. Today's read-only checks confirm Jellyfin health, five running media containers, and saved Radarr/Sonarr import/upgrade refresh hooks. The enabled backup job includes guest 103 but excludes guest 104; externally mounted library data needs separate protection. See the [dated evidence and remaining acceptance work](changes/2026-09-29.md). These services are outside the immutable V1 rebuild package and the core-only automatic inventory.

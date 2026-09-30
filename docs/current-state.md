@@ -1,12 +1,13 @@
-# Current state — September 27, 2026
+# Current state — September 29, 2026
 
 [Overview](../README.md) · [Change and incident record](changes/2026-09-27.md) · [Sentinel](sentinel.md)
 
-This is a dated synthesis of the completed operating sessions and operator confirmations. It is not a new simultaneous health check of every device. The immutable **v1.0.0** tag remains the September 26 reference package; its version manifest, validation evidence and release notes describe that freeze. Current documentation on main can advance independently.
+This combines September 27 operating records with targeted September 29 read-only media checks. See the [Jellyfin runbook](jellyfin.md) and [dated update](changes/2026-09-29.md). It is not a new simultaneous health check of every device. The immutable **v1.0.0** tag remains the September 26 reference package; its version manifest, validation evidence and release notes describe that freeze. Current documentation on main can advance independently.
 
 | Area | Latest supported state | Evidence limit |
 | --- | --- | --- |
-| Basecamp | Three Proxmox guests separate core applications, Pi-hole and GPU embeddings | Detailed versions and reboot acceptance are the V1 measurements |
+| Basecamp | Five running guests: two VMs and three LXCs; Jellyfin and media automation extend the original three workloads | V1 reboot acceptance still covers the original baseline |
+| Jellyfin / media automation | Guests 103 / 104 running; Jellyfin health passes; five media containers running; saved refresh triggers verified | Full request-to-playback acceptance and guest-104 scheduled backup coverage remain outstanding |
 | Citadel | Main Windows workstation, renamed; hosts Ollama and ComfyUI | Chat and image generation still depend on this separate machine |
 | Open WebUI | Runs on Basecamp; saved Ollama connection repaired after workstation changes | Six models and custom assistants returned; 99 chats and the account matched the pre-change backup |
 | Sentinel | Independent Raspberry Pi running DNS, monitoring, private access and emergency status | Client DNS selection determines whether independent DNS helps each client |
