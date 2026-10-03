@@ -31,3 +31,17 @@ See the [September 27 current state](current-state.md), [incident resolutions](c
 ## September 29 media addition
 
 [Jellyfin and media automation](jellyfin.md) add unprivileged guests 103 and 104. Today's read-only checks confirm Jellyfin health, five running media containers, and saved Radarr/Sonarr import/upgrade refresh hooks. The enabled backup job includes guest 103 but excludes guest 104; externally mounted library data needs separate protection. See the [dated evidence and remaining acceptance work](changes/2026-09-29.md). These services are outside the immutable V1 rebuild package and the core-only automatic inventory.
+
+
+## October 3 Arda services
+
+VM 105 `arda` is a dedicated AzerothCore WotLK guest outside the eleven-container core-services count.
+
+Verified production service units:
+
+- `mysql`
+- `arda-auth.service`
+- `arda-world.service`
+- `arda-backup.timer`
+
+Arda's game services are not Docker containers and should not be interpreted through the core-services container inventory. See the [Arda runbook](arda.md) for the documented worldserver logging workaround and backup behavior.
