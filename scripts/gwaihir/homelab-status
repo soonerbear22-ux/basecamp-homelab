@@ -1,0 +1,50 @@
+#!/bin/bash
+
+printf '\n===== GWAIHIR HOMELAB STATUS =====\n'
+printf 'Checked: %s\n\n' "$(date)"
+
+check_host() {
+    local name="$1"
+    local ip="$2"
+
+    if ping -c 1 -W 1 "$ip" >/dev/null 2>&1; then
+        printf '%-22s %-15s ONLINE\n' "$name" "$ip"
+    else
+        printf '%-22s %-15s OFFLINE\n' "$name" "$ip"
+    fi
+}
+
+check_service() {
+    local name="$1"
+    local host="$2"
+    local port="$3"
+
+    if timeout 2 bash -c "</dev/tcp/$host/$port" 2>/dev/null; then
+        printf '%-22s %-21s OPEN\n' "$name" "$host:$port"
+    else
+        printf '%-22s %-21s UNREACHABLE\n' "$name" "$host:$port"
+    fi
+}
+
+echo "HOSTS"
+echo "-------------------------------------------------------"
+check_host "Hornburg" "192.168.1.10"
+check_host "Pi-hole" "192.168.1.30"
+check_host "Sentinel" "192.168.1.31"
+check_host "Palantir" "192.168.1.32"
+check_host "Media Automation" "192.168.1.33"
+
+echo
+echo "SERVICES"
+echo "-------------------------------------------------------"
+check_service "Proxmox" "192.168.1.10" "8006"
+check_service "Pi-hole Web" "192.168.1.30" "80"
+check_service "Uptime Kuma" "192.168.1.31" "3001"
+check_service "Jellyfin" "192.168.1.32" "8096"
+check_service "Radarr" "192.168.1.33" "7878"
+check_service "Sonarr" "192.168.1.33" "8989"
+check_service "Prowlarr" "192.168.1.33" "9696"
+check_service "qBittorrent" "192.168.1.33" "8080"
+
+echo
+echo "==================================="
