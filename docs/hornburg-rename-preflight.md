@@ -4,7 +4,7 @@
 
 ## Execution status
 
-Target role/name: Hornburg. The actual Linux/Proxmox node is still `basecamp`, with FQDN `basecamp.home`. No hostname, node configuration ownership, Tailscale identity, Samba identity, guest name, storage path, or IP was changed during this preflight. No reboot or guest shutdown was performed.
+Target role/name: Hornburg. The actual Linux/Proxmox node remains `basecamp`, with FQDN `basecamp.home`. The operator approved a controlled six-guest outage and one reboot conditional on recovery testing. Selected recovery tests have now passed, but Remote Desktop Commander's host-reboot restriction blocks native cutover. No production guest was stopped, no host reboot occurred, and native identity/config ownership remain unchanged. Legacy Tailscale/SMB compatibility settings and a separate API candidate are prepared.
 
 The operator approved a controlled shutdown of all six guests and one host reboot, conditional on recovery testing passing. Execution is currently blocked by Remote Desktop Commander's configured restriction on host reboot commands; no native identity change or production shutdown has been applied. The official [Proxmox rename page](https://pve.proxmox.com/wiki/Renaming_a_PVE_node) specifies an empty node. This host is populated. [Proxmox staff guidance](https://forum.proxmox.com/threads/changing-hostname-and-ip-of-non-empty-pve-host.112068/) also describes configuration preservation, guest-config moves, and reboot considerations. This is a maintenance procedure requiring an explicit outage boundary and a validated recovery path, not a display-label edit.
 
@@ -46,7 +46,7 @@ The enabled daily Proxmox backup job was expanded from guests 100–103 to all s
 
 First full backups of guests 104 and 105 completed successfully. Both passed Zstandard integrity tests. Guest 104 archive structure contains the rootfs and media-stack configuration. Arda's archive also passed the VMA internal block-integrity check.
 
-All six guests have an observed archive and matching successful completion log. Only the two new archives received integrity testing in this session. No isolated restoration drill has been completed.
+All six guests have an observed archive and matching successful completion log. Only the two new archives received integrity testing in this session. Both new archives also passed isolated restoration tests, described below. The daily job was temporarily paused for the tests and re-enabled with all six IDs and its original schedule/retention.
 
 Selected host identity, network, storage, backup-job, Samba, and all six guest configuration files were preserved in a protected checkpoint. A checksum-verified copy is also on Elros. This is an off-host configuration checkpoint, not an off-host copy of every guest archive or a complete bare-metal backup.
 
@@ -64,7 +64,7 @@ Rollback must restore the old identity and config ownership coherently; a partia
 
 ## Acceptance limits
 
-The native rename has not been executed or rehearsed against this populated host. Archive integrity is not proof of successful restoration. Sentinel's direct DNS response is not proof that every client will automatically fail over. No zero-risk or zero-downtime guarantee is made.
+The native rename has not been executed or rehearsed against this populated host. The selected guest restores passed; full-host recovery, the other four guest restores, and post-rename client/application acceptance remain untested. Sentinel's direct DNS response is not proof that every client will automatically fail over. No zero-risk or zero-downtime guarantee is made.
 
 ## Concrete cutover details
 
@@ -84,3 +84,14 @@ No outage has started. Do not reboot now and assume the rename is prepared on di
 - Update the knowledge baseline and current records only after observed cutover results. Keep the legacy identities until client migration has been verified.
 
 If a pre-reboot identity/config move fails, reverse the moved files and identity changes together before restarting guests. After reboot, recover by the unchanged IP through independent administration and the console. A populated-host rename has not been rehearsed by the isolated guest restores, and off-host full-disk recovery remains separate work.
+
+## Isolated recovery results — completed
+
+- **Media automation (104):** Restored its new archive into unused test guest 9104 with a fresh local-lvm root disk, autostart disabled and no external bind mounts. Removed networking before the first boot. Docker and all five restored application containers started; qBittorrent, Radarr, Sonarr, Prowlarr and FlareSolverr returned HTTP 200 from inside the isolated guest. This does not test the separately mounted production media library or external indexers.
+- **Arda (105):** Restored its new archive into unused test guest 9105 on a separate local-lvm volume. Disabled autostart and removed its network interface before boot. The restored guest used 3 GiB RAM and two cores for the test. MySQL, auth, world and the daily backup timer were active; all three AzerothCore schemas were readable, and database/auth/world ports were listening. A game-client login and a separate SQL-dump import were not tested.
+- The Arda disk restore task completed in approximately 19 minutes on this host. This is one measured test, not an established recovery-time objective.
+- Both test guests were gracefully shut down and removed. Their temporary volumes are absent; the original six guest configs, network/storage config and SSH public identity hashes still match the checkpoint.
+- Final production validation found all six guests running, all storage active, no active tasks, an enabled daily six-guest backup job, and a complete seven-component API audit with operational semantic retrieval.
+- A consistent pmxcfs database checkpoint passed SQLite integrity checking and is retained privately in addition to the selected-config checkpoints.
+
+These results satisfy the selected guest-recovery checks for preparing the approved maintenance window. They do not override the configured reboot restriction or establish that a populated native-node rename cannot fail.
