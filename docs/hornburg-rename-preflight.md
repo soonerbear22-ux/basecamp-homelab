@@ -30,8 +30,8 @@ Configured RAM is not measured consumption. Guest 103 and 104 external bind moun
 | Proxmox guest ownership | Six configs under the existing node directory | Preserve all IDs/configs; use the appropriate pmxcfs guest-config move procedure with guests stopped |
 | Homelab API | Live `PVE_NODE` is hard-coded to `basecamp` | Update the node reference in coordination with the native change, then repeat the full six-guest audit |
 | Proxmox TLS | Current certificate names the old short name and FQDN | Regenerate/validate the node certificate and check clients' trust/URLs |
-| Tailscale | Existing device advertises the old name | Preserve its registration/IP; keep the legacy name during initial recovery, then migrate client references deliberately |
-| Samba | Effective NetBIOS name is BASECAMP, inherited from the hostname; share is Basecamp | Preserve the existing share/path and pin a compatibility identity before the native hostname changes |
+| Tailscale | Legacy `basecamp` advertisement is now explicitly pinned | Existing registration/IP preserved; retain this compatibility name until client migration is verified |
+| Samba | NetBIOS name explicitly pinned to BASECAMP; HORNBURG alias added; share remains Basecamp | Existing share/path and mapped drive remain accessible; preserve compatibility during native cutover |
 | Elros mapped drive | Existing Basecamp share works through an IP-based mapping | Keep the share name, address and underlying paths |
 | Windows SSH | Existing alias points to the node's overlay IP; strict checking succeeds by IP | Preserve public host identity, authorized keys and existing client aliases |
 | Storage | Existing storage IDs and mounts contain the old name; no node restriction was observed | Keep `basecamp-storage`, `basecamp-backups` and their physical paths |
