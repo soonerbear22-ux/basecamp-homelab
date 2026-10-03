@@ -17,7 +17,7 @@ if [ "${1:-}" = "--save" ]; then
     exit 0
 fi
 
-# V3 - Network, service, and Proxmox guest-state checks
+# V3.3 - Network, service, Proxmox guest-state, and Elros checks
 
 HORNBURG="192.168.1.10"
 CORE="192.168.1.20"
@@ -25,6 +25,7 @@ PIHOLE="192.168.1.30"
 SENTINEL="192.168.1.31"
 PALANTIR="192.168.1.32"
 MEDIA="192.168.1.33"
+ELROS="192.168.1.147"
 SSH_KEY="$HOME/.ssh/gwaihir_homelab"
 
 host_check() {
@@ -102,7 +103,7 @@ guest_state() {
 
 echo
 echo "========================================"
-echo "       GWAIHIR HOMELAB STATUS V3.2"
+echo "       GWAIHIR HOMELAB STATUS V3.3"
 echo "========================================"
 echo "Checked: $(date)"
 echo
@@ -153,7 +154,22 @@ http_check "Sentinel Kuma" "http://$SENTINEL:3001"
 
 echo
 echo "===== EXTERNAL SYSTEMS ====="
-printf "%-24s UNKNOWN - Elros check pending\n" "Elros"
+
+if timeout 2 bash -c "</dev/tcp/$ELROS/11434" >/dev/null 2>&1 || \
+   timeout 2 bash -c "</dev/tcp/$ELROS/8188" >/dev/null 2>&1 || \
+   timeout 2 bash -c "</dev/tcp/$ELROS/47989" >/dev/null 2>&1; then
+    printf "%-24s ONLINE\n" "Elros"
+else
+    printf "%-24s UNREACHABLE\n" "Elros"
+fi
+
+http_check "Elros Ollama" "http://$ELROS:11434/api/tags"
+http_check "Elros ComfyUI" "http://$ELROS:8188/"
+tcp_check "Elros Kokoro TTS" "$ELROS" 8880
+tcp_check "Elros Sunshine 47984" "$ELROS" 47984
+tcp_check "Elros Sunshine 47989" "$ELROS" 47989
+tcp_check "Elros Sunshine 47990" "$ELROS" 47990
+tcp_check "Elros Sunshine 48010" "$ELROS" 48010
 
 echo
 echo "========================================"

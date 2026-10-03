@@ -67,6 +67,13 @@ The initial verified checks include:
 - Sonarr
 - Prowlarr
 - qBittorrent
+- Elros service reachability
+- Elros Ollama
+- Elros ComfyUI
+- Elros Kokoro TTS
+- Elros Sunshine
+
+Elros is currently monitored at LAN address `192.168.1.147`. Because Elros does not respond to ICMP ping from Gwaihir, its online state is determined from verified service reachability rather than ping alone.
 
 All initial host and service checks passed during Gwaihir commissioning on October 2, 2026.
 
@@ -90,6 +97,7 @@ Snapshots are stored locally under:
 
 The snapshot records host reachability, Proxmox guest state, core services,
 media services, infrastructure checks, and external-system status at the
-time the command is run.
+time the command is run. External-system status includes Elros and its
+verified Ollama, ComfyUI, Kokoro TTS, and Sunshine service checks.
 
 Normal `homelab-status` operation remains unchanged.
