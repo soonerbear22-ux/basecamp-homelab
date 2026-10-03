@@ -1,6 +1,22 @@
 #!/bin/bash
 
 # Gwaihir Homelab Operations Status
+# Optional incident snapshot mode
+if [ "${1:-}" = "--save" ]; then
+    LOG_DIR="$HOME/gwaihir/logs"
+    mkdir -p "$LOG_DIR"
+
+    TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')
+    LOG_FILE="$LOG_DIR/homelab-status-$TIMESTAMP.log"
+
+    "$0" | tee "$LOG_FILE"
+
+    echo
+    echo "Snapshot saved:"
+    echo "$LOG_FILE"
+    exit 0
+fi
+
 # V3 - Network, service, and Proxmox guest-state checks
 
 HORNBURG="192.168.1.10"
@@ -86,7 +102,7 @@ guest_state() {
 
 echo
 echo "========================================"
-echo "       GWAIHIR HOMELAB STATUS V3.1"
+echo "       GWAIHIR HOMELAB STATUS V3.2"
 echo "========================================"
 echo "Checked: $(date)"
 echo

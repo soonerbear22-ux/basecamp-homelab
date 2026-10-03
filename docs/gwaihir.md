@@ -73,3 +73,23 @@ All initial host and service checks passed during Gwaihir commissioning on Octob
 ## Security
 
 No passwords, API keys, private SSH keys, authentication tokens, or other secrets should be committed to this repository.
+
+## Incident snapshots
+
+Gwaihir can capture a timestamped homelab status report for troubleshooting:
+
+```bash
+homelab-status --save
+```
+
+Snapshots are stored locally under:
+
+```text
+~/gwaihir/logs/homelab-status-YYYY-MM-DD_HH-MM-SS.log
+```
+
+The snapshot records host reachability, Proxmox guest state, core services,
+media services, infrastructure checks, and external-system status at the
+time the command is run.
+
+Normal `homelab-status` operation remains unchanged.
