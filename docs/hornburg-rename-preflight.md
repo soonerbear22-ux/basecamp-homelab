@@ -1,97 +1,72 @@
-# Hornburg rename preflight — October 3, 2026
+# Hornburg rename and recovery record - October 3, 2026
 
 [Current state](current-state.md) · [Backup and recovery](backup-recovery.md)
 
-## Execution status
+## Completed status
 
-Target role/name: Hornburg. The actual Linux/Proxmox node remains `basecamp`, with FQDN `basecamp.home`. The operator approved a controlled six-guest outage and one reboot conditional on recovery testing. Selected recovery tests have now passed, but Remote Desktop Commander's host-reboot restriction blocks native cutover. No production guest was stopped, no host reboot occurred, and native identity/config ownership remain unchanged. Legacy Tailscale/SMB compatibility settings and a separate API candidate are prepared.
+The native Linux/Proxmox node is now **hornburg**, with FQDN **hornburg.home**. The operator approved the six-guest maintenance outage after isolated recovery tests. All six guests were stopped with normal guest shutdown commands, their definitions were moved with hashes unchanged, and the operator issued the single host reboot through Termius because Remote Desktop Commander blocks host reboot commands.
 
-The operator approved a controlled shutdown of all six guests and one host reboot, conditional on recovery testing passing. Execution is currently blocked by Remote Desktop Commander's configured restriction on host reboot commands; no native identity change or production shutdown has been applied. The official [Proxmox rename page](https://pve.proxmox.com/wiki/Renaming_a_PVE_node) specifies an empty node. This host is populated. [Proxmox staff guidance](https://forum.proxmox.com/threads/changing-hostname-and-ip-of-non-empty-pve-host.112068/) also describes configuration preservation, guest-config moves, and reboot considerations. This is a maintenance procedure requiring an explicit outage boundary and a validated recovery path, not a display-label edit.
+The host returned at approximately **01:50 America/Chicago / 06:50 UTC**. All six guests started automatically. Final application/API checks passed at approximately **01:57 / 06:57 UTC**. The API node reference is deployed, the obsolete empty node directory is removed, and daily backups are enabled again.
 
-## Verified host and guest baseline
+## Preserved inventory
 
-Standalone Proxmox host: one node directory, no Corosync configuration, Proxmox manager 9.2.20, kernel 7.0.14-19-pve, Intel i7-9700K, approximately 32 GB RAM. All six guests were running and configured for autostart.
-
-| ID | Type | Live name | Configured RAM | Root disk |
+| ID | Type | Live guest name | Configured RAM | Root disk |
 | --- | --- | --- | --- | --- |
-| 100 | QEMU VM | core-services | 8 GiB | 100 GiB, local-lvm |
+| 100 | VM | core-services | 8 GiB | 100 GiB, local-lvm |
 | 101 | LXC | pihole | 1 GiB | 8 GiB, local-lvm |
-| 102 | QEMU VM | ai-worker | 12 GiB | 100 GiB, local-lvm; GPU passthrough |
+| 102 | VM | ai-worker | 12 GiB | 100 GiB, local-lvm; GPU passthrough |
 | 103 | LXC | jellyfin | 2 GiB | 24 GiB, local-lvm |
 | 104 | LXC | media-automation | 4 GiB | 16 GiB, local-lvm |
-| 105 | QEMU VM | arda | 8 GiB | 64 GiB, basecamp-storage |
+| 105 | VM | arda | 8 GiB | 64 GiB, basecamp-storage |
 
-Configured RAM is not measured consumption. Guest 103 and 104 external bind mounts are not included in their rootfs archives. Their media/data directories require separate protection.
+All original guest-config hashes, network/storage configuration hashes and SSH public host-key hashes matched after the rename. Guest IDs, guest names, disks, permissions, network addresses, bridge configuration and physical storage paths were preserved. Only guest-definition ownership moved from the old node directory to the new one.
 
-## Dependencies and preservation plan
+## Compatibility names intentionally retained
 
-| Dependency | Verified state | Requirement for a native rename |
-| --- | --- | --- |
-| Proxmox guest ownership | Six configs under the existing node directory | Preserve all IDs/configs; use the appropriate pmxcfs guest-config move procedure with guests stopped |
-| Homelab API | Live `PVE_NODE` is hard-coded to `basecamp` | Update the node reference in coordination with the native change, then repeat the full six-guest audit |
-| Proxmox TLS | Current certificate names the old short name and FQDN | Regenerate/validate the node certificate and check clients' trust/URLs |
-| Tailscale | Legacy `basecamp` advertisement is now explicitly pinned | Existing registration/IP preserved; retain this compatibility name until client migration is verified |
-| Samba | NetBIOS name explicitly pinned to BASECAMP; HORNBURG alias added; share remains Basecamp | Existing share/path and mapped drive remain accessible; preserve compatibility during native cutover |
-| Elros mapped drive | Existing Basecamp share works through an IP-based mapping | Keep the share name, address and underlying paths |
-| Windows SSH | Existing alias points to the node's overlay IP; strict checking succeeds by IP | Preserve public host identity, authorized keys and existing client aliases |
-| Storage | Existing storage IDs and mounts contain the old name; no node restriction was observed | Keep `basecamp-storage`, `basecamp-backups` and their physical paths |
-| Prometheus | Existing job label is `basecamp` | Preserve label continuity and IP target; change display labels separately |
-| Homepage / Uptime Kuma | Node and backup-health targets use IP addresses | Keep working endpoints; update titles after technical verification |
-| DNS continuity | Independent Sentinel DNS answered a direct query | Verify affected clients actually use a working fallback before planned Pi-hole downtime |
-| Backup health | Existing page checks the newest guest archive and newest host archive | Do not treat its OK status as proof of per-guest coverage |
+| Area | Current choice |
+| --- | --- |
+| Tailscale | The existing device registration, address and advertised name `basecamp` remain; native Linux/Proxmox is `hornburg` |
+| Samba | NetBIOS name remains `BASECAMP`; `HORNBURG` is an additional alias; the share remains `Basecamp` |
+| Storage | `basecamp-storage`, `basecamp-backups`, and existing mount paths remain |
+| SSH clients | Existing aliases and IP-based connections remain usable; SSH host keys were preserved |
+| API | `PVE_NODE` is `hornburg`; existing `/basecamp/*` paths and operation IDs remain compatible |
+| Monitoring | Existing IP targets and Prometheus job labels remain, preserving query/history compatibility |
+| Guest application paths | Existing `/opt/basecamp` paths and backup/service prefixes remain |
 
-## Backup changes completed
+Homepage's Proxmox, backup, primary Pi-hole and related host descriptions now use Hornburg. Older monitor display labels may still use Basecamp; they were not globally rewritten.
 
-The enabled daily Proxmox backup job was expanded from guests 100–103 to all six guests, 100–105. Snapshot mode, compression, schedule, storage, and retention were preserved.
+## Post-reboot acceptance
 
-First full backups of guests 104 and 105 completed successfully. Both passed Zstandard integrity tests. Guest 104 archive structure contains the rootfs and media-stack configuration. Arda's archive also passed the VMA internal block-integrity check.
+- Hornburg is the only node returned by the Proxmox node list and reports online.
+- All six guests are running and all four configured storage entries are active.
+- Proxmox cluster filesystem, API proxy, API daemon, status daemon and scheduler are active.
+- The regenerated TLS certificate names hornburg/hornburg.home and retains the existing IP SAN. The management page returned HTTP 200 with its existing Proxmox CA validated.
+- SSH key hashes matched the checkpoint and strict IP-based SSH continued working.
+- Primary Pi-hole and independent Sentinel DNS answered direct queries from the workstation.
+- Existing Basecamp and knowledge mapped drives remained accessible.
+- Jellyfin and all five media automation endpoints returned HTTP 200.
+- Arda database, auth, world and backup timer were active; database/auth/world ports were listening.
+- The scoped API deployment changed only its node assignment in the private source. Live source/container hashes matched; the ten other core containers were not recreated by that deployment.
+- Final API health returned OK, all seven audit components were retrieved, all six expected guests and eleven expected core containers were running, and embeddings/Qdrant/semantic retrieval passed.
+- Daily snapshot/Zstandard/keep-last=7 backups are enabled for 100-105. The next scheduled successful run is still to be observed.
+- Backup-health HTTP returned OK. Its newest-archive check remains insufficient to establish freshness for every guest.
 
-All six guests have an observed archive and matching successful completion log. Only the two new archives received integrity testing in this session. Both new archives also passed isolated restoration tests, described below. The daily job was temporarily paused for the tests and re-enabled with all six IDs and its original schedule/retention.
+### Prometheus recovery
 
-Selected host identity, network, storage, backup-job, Samba, and all six guest configuration files were preserved in a protected checkpoint. A checksum-verified copy is also on Elros. This is an off-host configuration checkpoint, not an off-host copy of every guest archive or a complete bare-metal backup.
+Prometheus had exited cleanly during the guest shutdown, with exit code 0 and no OOM indication, but did not restart automatically with the other core containers. Starting the existing container restored readiness. All four configured monitoring targets subsequently reported up with no scrape errors. The reason its restart policy did not bring it back is not established; do not describe that cause as diagnosed.
 
-## Approved maintenance sequence — recovery and execution gates
+## Isolated recovery tests completed before cutover
 
-1. Recheck active backup tasks, config hashes, available capacity and all six guests. Validate the chosen recovery path in isolation and make a local console available.
-2. Confirm independent administration by IP and DNS continuity. Prepare compatibility settings for legacy Tailscale/SMB/client references.
-3. Preserve updated configs and evidence. Gracefully stop guests during an agreed maintenance window, checking service/player impact first.
-4. Apply the Proxmox node-identity and guest-config migration procedure. Preserve disks, IDs, mounts, permissions and SSH keys. Handle the TLS certificate and reboot as required.
-5. Recover the host by its existing IP. Verify storage, networking, node ownership and all six guests. Bring services back in dependency order; validate Pi-hole, core services, embeddings, media services and Arda.
-6. Coordinate the API node reference and validate health, discovery, seven-component audit and semantic retrieval. Check monitoring, shares, client access and guest/application logs.
-7. Update client-facing names and documentation incrementally after technical verification. Retain rollback material and legacy compatibility until acceptance is complete.
+**Media automation:** Its new archive was restored to unused test LXC 9104 on a fresh root disk, with autostart disabled, no external bind mounts and networking removed before first boot. Docker and all five local application endpoints passed. External library recovery and indexer integration were outside this test.
 
-Rollback must restore the old identity and config ownership coherently; a partial reversal can strand guest definitions. Disk restoration is a separate recovery action and is not part of an ordinary hostname rollback.
+**Arda:** Its new archive was restored to unused test VM 9105 on a separate local-lvm volume, with autostart disabled and its network interface removed before boot. MySQL/auth/world/timer health, all three database schemas and application listeners passed. The disk restore took approximately 19 minutes on this host.
 
-## Acceptance limits
+Both test guests were normally shut down and removed; their temporary volumes were verified absent. Production guest definitions were never overwritten by a restore.
 
-The native rename has not been executed or rehearsed against this populated host. The selected guest restores passed; full-host recovery, the other four guest restores, and post-rename client/application acceptance remain untested. Sentinel's direct DNS response is not proof that every client will automatically fail over. No zero-risk or zero-downtime guarantee is made.
+## Recovery material and limits
 
-## Concrete cutover details
+Selected identity, network, storage, backup, Samba and six-guest configuration checkpoints are retained privately, with a checksum-verified selected-config copy on the workstation. Consistent pmxcfs database checkpoints passed SQLite integrity checking. The prior API source/image and the deployed candidate are retained for rollback.
 
-No outage has started. Do not reboot now and assume the rename is prepared on disk.
+The old node directory was removed only after confirming that it held no guest definitions and after verifying the six new-node configs against their original hashes. Rollback must coordinate native identity, definition ownership and the API node reference; disk restoration is not part of an ordinary hostname rollback.
 
-- Recheck the protected configuration checkpoint, the consistent pmxcfs database checkpoint, all six config hashes, active tasks and scheduled-job state immediately before the approved window. The configuration copy on Elros was checksum-verified; the complete guest archives are still on the host's backup disk.
-- Keep the same LAN/overlay addresses, bridge, guest IDs, disk volumes, storage IDs, mount paths, authorized keys and SSH host keys. Keep the `Basecamp` share and existing IP-based drive mappings.
-- Compatibility is already prepared: Samba explicitly retains NetBIOS name `BASECAMP` with alias `HORNBURG`; Tailscale explicitly retains its existing `basecamp` advertised name and registration. These are intentional compatibility names, not evidence that the native rename happened.
-- The API candidate changes only the live source's `PVE_NODE` assignment to `hornburg`. It has been built from the existing private source and tested for import, OpenAPI serialization and new-node selection with external dependencies mocked. It is retained as a separate candidate image; the running API and host source still use `basecamp`.
-- Gracefully stop media automation, Jellyfin, AI worker, Arda, Pi-hole and core services; verify every guest is stopped. A timeout or unexpected active task stops the procedure for investigation.
-- On this standalone host, create the new node's empty `lxc` and `qemu-server` directories and move each guest configuration file individually. Do not copy duplicate IDs inside pmxcfs, rename a nonempty directory, remove disks or alter guest settings. Verify every moved config against its original hash.
-- Change `/etc/hostname` to `hornburg`. Set the existing address's primary hosts-file names to `hornburg.home hornburg`, retaining `basecamp.home basecamp` as aliases. Coordinate Postfix's current hostname assignment. Preserve the existing network configuration.
-- Reboot once through an allowed control. Proxmox proxy startup runs `pvecm updatecerts`; verify the generated certificate's new name/SANs and management endpoint. Preserve SSH keys independently.
-- Verify the new native node, storage and all six guest definitions before any old-node-directory cleanup. Boot recovery and application health must pass; guest autostart flags alone do not prove successful startup.
-- Deploy the prepared API source/image without replacing private settings. Keep its existing endpoint paths and operation IDs for connector compatibility. Repeat health, discovery, all seven audit components, all six running guests, embeddings and a known semantic query.
-- Verify DNS, SMB/mapped drives, monitoring, media application endpoints and Arda database/auth/world health. Restore the original enabled schedule with six-guest scope and record the next successful scheduled run.
-- Update the knowledge baseline and current records only after observed cutover results. Keep the legacy identities until client migration has been verified.
-
-If a pre-reboot identity/config move fails, reverse the moved files and identity changes together before restarting guests. After reboot, recover by the unchanged IP through independent administration and the console. A populated-host rename has not been rehearsed by the isolated guest restores, and off-host full-disk recovery remains separate work.
-
-## Isolated recovery results — completed
-
-- **Media automation (104):** Restored its new archive into unused test guest 9104 with a fresh local-lvm root disk, autostart disabled and no external bind mounts. Removed networking before the first boot. Docker and all five restored application containers started; qBittorrent, Radarr, Sonarr, Prowlarr and FlareSolverr returned HTTP 200 from inside the isolated guest. This does not test the separately mounted production media library or external indexers.
-- **Arda (105):** Restored its new archive into unused test guest 9105 on a separate local-lvm volume. Disabled autostart and removed its network interface before boot. The restored guest used 3 GiB RAM and two cores for the test. MySQL, auth, world and the daily backup timer were active; all three AzerothCore schemas were readable, and database/auth/world ports were listening. A game-client login and a separate SQL-dump import were not tested.
-- The Arda disk restore task completed in approximately 19 minutes on this host. This is one measured test, not an established recovery-time objective.
-- Both test guests were gracefully shut down and removed. Their temporary volumes are absent; the original six guest configs, network/storage config and SSH public identity hashes still match the checkpoint.
-- Final production validation found all six guests running, all storage active, no active tasks, an enabled daily six-guest backup job, and a complete seven-component API audit with operational semantic retrieval.
-- A consistent pmxcfs database checkpoint passed SQLite integrity checking and is retained privately in addition to the selected-config checkpoints.
-
-These results satisfy the selected guest-recovery checks for preparing the approved maintenance window. They do not override the configured reboot restriction or establish that a populated native-node rename cannot fail.
+The complete guest archives and media/data still share the host's HDD/filesystem. Independent full-disk backups, the other four guest restore drills, a separate SQL-dump import, game-client recovery login and full external-media workflows remain outside this acceptance. Configured RAM is not measured consumption. No existing disk was reformatted and no SSH private key was copied.
