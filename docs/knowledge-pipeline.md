@@ -30,3 +30,12 @@ Use the synthetic [retrieval sample](../knowledge/samples/retrieval-check.md) in
 Check actual embeddings, collection dimensions/distance, source provenance, semantic retrieval and source inventory. A green small collection can return results with `indexed_vectors_count: 0`; that field alone does not prove failure. A passing health query does not prove corpus completeness or answer quality.
 
 PDF extraction has no OCR; DOCX extraction reads paragraphs/headings, not tables. Empty or failed documents may remain in the inbox. Invalid state JSON currently falls back to an empty state: preserve and repair it before another ingest. These are documented V1 limitations.
+
+
+## October 3 hardening and recovery
+
+A maintenance session identified that the inbox is actively watched by `homelab-knowledge-ingest.path`; files placed there can be consumed within seconds. Recovery or editing work should therefore stage documents outside the inbox, pause the path unit when necessary, and only move completed files into the inbox for deliberate ingestion.
+
+A secret-bearing filename guard was added after recovery material was found in the private corpus. The ingester now rejects filenames containing common password, credential, recovery-code, private-key and environment-file indicators before extraction or embedding. This is a preventive filename heuristic, not a substitute for content-level secret scanning.
+
+The same session repaired the Arda knowledge document by staging it outside the watched inbox, reingesting once, and verifying that the processed file hash, state metadata and exact Qdrant source count agreed. See the [October 3 change record](changes/2026-10-03.md).
