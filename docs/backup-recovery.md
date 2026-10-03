@@ -37,3 +37,19 @@ See the [September 27 current state](current-state.md), [incident resolutions](c
 ## September 29 media addition
 
 [Jellyfin and media automation](jellyfin.md) add unprivileged guests 103 and 104. Today's read-only checks confirm Jellyfin health, five running media containers, and saved Radarr/Sonarr import/upgrade refresh hooks. The enabled backup job includes guest 103 but excludes guest 104; externally mounted library data needs separate protection. See the [dated evidence and remaining acceptance work](changes/2026-09-29.md). These services are outside the immutable V1 rebuild package and the core-only automatic inventory.
+
+
+## October 3 Arda backup path
+
+Arda (VM 105) has a separate application-level backup path inside the guest. A persistent daily systemd timer runs `/usr/local/bin/arda-backup`, producing compressed dumps of `acore_auth`, `acore_characters`, and `acore_world` plus configuration files.
+
+A manual October 3 backup completed and all three compressed SQL archives passed gzip integrity checks.
+
+This is application-level protection only. It does not prove:
+
+- VM 105 is included in the Proxmox guest-backup job;
+- the backup is off-host;
+- a database restore has been completed successfully;
+- the VM itself can be reconstructed from this backup without the documented runtime/configuration steps.
+
+Keep the [Arda runbook](arda.md) with the backup artifacts so source revision, runtime layout, service units and the worldserver stdin workaround are available during recovery.
