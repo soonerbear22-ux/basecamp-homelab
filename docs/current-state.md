@@ -6,9 +6,9 @@ This combines September 27 operating records, September 29 media checks, and Oct
 
 | Area | Latest supported state | Evidence limit |
 | --- | --- | --- |
-| Basecamp | Five running guests: two VMs and three LXCs; Jellyfin and media automation extend the original three workloads | V1 reboot acceptance still covers the original baseline |
-| Jellyfin / media automation | Guests 103 / 104 running; Jellyfin health passes; five media containers running; saved refresh triggers verified | Full request-to-playback acceptance and guest-104 scheduled backup coverage remain outstanding |
-| Arda | VM 105 hosts a private AzerothCore WotLK realm; autostart, MySQL/auth/world service health and daily local database/configuration backup automation were verified October 3 | Local backup integrity was tested; an isolated database restore drill remains separate work |
+| Hornburg role / native basecamp | Six running guests: three QEMU VMs and three LXCs; all configured for autostart; native hostname remains basecamp | [Native rename preflight](hornburg-rename-preflight.md) completed; hostname change and recovery rehearsal remain pending |
+| Jellyfin / media automation | Guests 103 / 104 running; Jellyfin health passes; five media containers running; saved refresh triggers verified | Full request-to-playback acceptance remains outstanding; guest 104 now has a validated first archive and daily scheduled coverage |
+| Arda | VM 105 hosts a private AzerothCore WotLK realm; autostart, MySQL/auth/world service health and daily local database/configuration backup automation were verified October 3 | Local SQL backup integrity and first full Proxmox archive integrity were tested; isolated restoration remains separate work |
 | Citadel | Main Windows workstation, renamed; hosts Ollama and ComfyUI | Chat and image generation still depend on this separate machine |
 | Open WebUI | Runs on Basecamp; saved Ollama connection repaired after workstation changes | Six models and custom assistants returned; 99 chats and the account matched the pre-change backup |
 | Sentinel | Independent Raspberry Pi running DNS, monitoring, private access and emergency status | Client DNS selection determines whether independent DNS helps each client |
@@ -25,3 +25,10 @@ This combines September 27 operating records, September 29 media checks, and Oct
 - Revalidate full voice recovery separately. Prior voice use is not a current end-to-end acceptance test.
 
 The [automatic inventory process](documentation-sync.md) covers a deliberately narrow set of core container facts. It cannot infer equipment moves, root causes, or user-visible acceptance from a container inventory.
+
+
+## October 3 Hornburg rename preflight and backup coverage
+
+The daily Proxmox job now includes all six guests, 100–105. New full archives for 104 and 105 passed compression integrity testing; Arda's archive also passed VMA block verification. The live six-guest audit and semantic retrieval remained healthy after these backups.
+
+Selected configuration rollback material is retained on the host and as a checksum-verified copy on Elros. The actual node is still `basecamp`. The [preflight](hornburg-rename-preflight.md) records the API, certificates, guest ownership, Tailscale, Samba, monitoring, storage and DNS dependencies. No native hostname change, host reboot or guest shutdown has been performed.
