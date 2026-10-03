@@ -50,3 +50,19 @@ See the [September 27 current state](current-state.md), [incident resolutions](c
 ## September 29 media addition
 
 [Jellyfin and media automation](jellyfin.md) add unprivileged guests 103 and 104. Today's read-only checks confirm Jellyfin health, five running media containers, and saved Radarr/Sonarr import/upgrade refresh hooks. The enabled backup job includes guest 103 but excludes guest 104; externally mounted library data needs separate protection. See the [dated evidence and remaining acceptance work](changes/2026-09-29.md). These services are outside the immutable V1 rebuild package and the core-only automatic inventory.
+
+
+## October 3 current-recovery additions
+
+The immutable V1 reboot evidence covers only the original three guests. Current operations now also include media guests 103/104 and Arda VM 105.
+
+For current-topology recovery:
+
+1. recover the Proxmox host and storage first;
+2. verify the original infrastructure guests;
+3. verify Jellyfin/media guests separately;
+4. verify Arda VM 105, then MySQL, `arda-auth.service`, `arda-world.service`, and the realm listeners;
+5. check Arda journal growth for recurrence of the documented `AC>` prompt storm;
+6. verify application-level backup timers independently from Proxmox guest-backup coverage.
+
+Do not infer current six-guest recovery from the historical three-guest V1 reboot test.
