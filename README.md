@@ -6,6 +6,8 @@ A working infrastructure lab built and operated by Logan: Proxmox virtualization
 
 ## Current operations
 
+**October 3:** [Arda](docs/arda.md), the dedicated AzerothCore WotLK realm, now has verified autostart, daily database/configuration backups, a documented worldserver console-log incident fix, and an updated AI knowledge record. The same maintenance session also hardened the knowledge ingester against secret-bearing filenames. See the [dated update](docs/changes/2026-10-03.md).
+
 **September 29:** [Jellyfin and media automation](docs/jellyfin.md) now occupy separate unprivileged guests, alongside the original V1 workloads. Today's checks confirmed Jellyfin health, five running media containers and saved import/upgrade refresh hooks. See the [dated update](docs/changes/2026-09-29.md) for the outstanding guest-104 backup gap and end-to-end acceptance limits.
 
 
@@ -59,6 +61,7 @@ These commands validate the public package without deploying services. Deploymen
 | [Operations](docs/operations.md) · [troubleshooting](docs/troubleshooting.md) | Acceptance, maintenance, and failure modes |
 | [Services](docs/services.md) · [networking](docs/networking.md) | Roles, ports, and access paths |
 | [Jellyfin and media automation](docs/jellyfin.md) | Placement, library refresh, troubleshooting and recovery gaps |
+| [Arda](docs/arda.md) | AzerothCore realm placement, backups, service operations and known incident recovery |
 | [Knowledge](docs/knowledge-pipeline.md) | Extraction, locking, embeddings, and retrieval |
 | [Storage](docs/storage.md) · [backup and recovery](docs/backup-recovery.md) | Persistence and final backup coverage |
 | [Security](docs/security.md) | Trust boundaries and publication rules |
