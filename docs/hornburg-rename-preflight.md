@@ -6,7 +6,7 @@
 
 Target role/name: Hornburg. The actual Linux/Proxmox node is still `basecamp`, with FQDN `basecamp.home`. No hostname, node configuration ownership, Tailscale identity, Samba identity, guest name, storage path, or IP was changed during this preflight. No reboot or guest shutdown was performed.
 
-A native node rename is not cleared for automatic execution. The official [Proxmox rename page](https://pve.proxmox.com/wiki/Renaming_a_PVE_node) specifies an empty node. This host is populated. [Proxmox staff guidance](https://forum.proxmox.com/threads/changing-hostname-and-ip-of-non-empty-pve-host.112068/) also describes configuration preservation, guest-config moves, and reboot considerations. This is a maintenance procedure requiring an explicit outage boundary and a validated recovery path, not a display-label edit.
+The operator approved a controlled shutdown of all six guests and one host reboot, conditional on recovery testing passing. Execution is currently blocked by Remote Desktop Commander's configured restriction on host reboot commands; no native identity change or production shutdown has been applied. The official [Proxmox rename page](https://pve.proxmox.com/wiki/Renaming_a_PVE_node) specifies an empty node. This host is populated. [Proxmox staff guidance](https://forum.proxmox.com/threads/changing-hostname-and-ip-of-non-empty-pve-host.112068/) also describes configuration preservation, guest-config moves, and reboot considerations. This is a maintenance procedure requiring an explicit outage boundary and a validated recovery path, not a display-label edit.
 
 ## Verified host and guest baseline
 
@@ -50,7 +50,7 @@ All six guests have an observed archive and matching successful completion log. 
 
 Selected host identity, network, storage, backup-job, Samba, and all six guest configuration files were preserved in a protected checkpoint. A checksum-verified copy is also on Elros. This is an off-host configuration checkpoint, not an off-host copy of every guest archive or a complete bare-metal backup.
 
-## Proposed maintenance sequence — approval and recovery gates
+## Approved maintenance sequence — recovery and execution gates
 
 1. Recheck active backup tasks, config hashes, available capacity and all six guests. Validate the chosen recovery path in isolation and make a local console available.
 2. Confirm independent administration by IP and DNS continuity. Prepare compatibility settings for legacy Tailscale/SMB/client references.
