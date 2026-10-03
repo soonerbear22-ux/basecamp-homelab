@@ -65,3 +65,22 @@ Rollback must restore the old identity and config ownership coherently; a partia
 ## Acceptance limits
 
 The native rename has not been executed or rehearsed against this populated host. Archive integrity is not proof of successful restoration. Sentinel's direct DNS response is not proof that every client will automatically fail over. No zero-risk or zero-downtime guarantee is made.
+
+## Concrete cutover details
+
+No outage has started. Do not reboot now and assume the rename is prepared on disk.
+
+- Recheck the protected configuration checkpoint, the consistent pmxcfs database checkpoint, all six config hashes, active tasks and scheduled-job state immediately before the approved window. The configuration copy on Elros was checksum-verified; the complete guest archives are still on the host's backup disk.
+- Keep the same LAN/overlay addresses, bridge, guest IDs, disk volumes, storage IDs, mount paths, authorized keys and SSH host keys. Keep the `Basecamp` share and existing IP-based drive mappings.
+- Compatibility is already prepared: Samba explicitly retains NetBIOS name `BASECAMP` with alias `HORNBURG`; Tailscale explicitly retains its existing `basecamp` advertised name and registration. These are intentional compatibility names, not evidence that the native rename happened.
+- The API candidate changes only the live source's `PVE_NODE` assignment to `hornburg`. It has been built from the existing private source and tested for import, OpenAPI serialization and new-node selection with external dependencies mocked. It is retained as a separate candidate image; the running API and host source still use `basecamp`.
+- Gracefully stop media automation, Jellyfin, AI worker, Arda, Pi-hole and core services; verify every guest is stopped. A timeout or unexpected active task stops the procedure for investigation.
+- On this standalone host, create the new node's empty `lxc` and `qemu-server` directories and move each guest configuration file individually. Do not copy duplicate IDs inside pmxcfs, rename a nonempty directory, remove disks or alter guest settings. Verify every moved config against its original hash.
+- Change `/etc/hostname` to `hornburg`. Set the existing address's primary hosts-file names to `hornburg.home hornburg`, retaining `basecamp.home basecamp` as aliases. Coordinate Postfix's current hostname assignment. Preserve the existing network configuration.
+- Reboot once through an allowed control. Proxmox proxy startup runs `pvecm updatecerts`; verify the generated certificate's new name/SANs and management endpoint. Preserve SSH keys independently.
+- Verify the new native node, storage and all six guest definitions before any old-node-directory cleanup. Boot recovery and application health must pass; guest autostart flags alone do not prove successful startup.
+- Deploy the prepared API source/image without replacing private settings. Keep its existing endpoint paths and operation IDs for connector compatibility. Repeat health, discovery, all seven audit components, all six running guests, embeddings and a known semantic query.
+- Verify DNS, SMB/mapped drives, monitoring, media application endpoints and Arda database/auth/world health. Restore the original enabled schedule with six-guest scope and record the next successful scheduled run.
+- Update the knowledge baseline and current records only after observed cutover results. Keep the legacy identities until client migration has been verified.
+
+If a pre-reboot identity/config move fails, reverse the moved files and identity changes together before restarting guests. After reboot, recover by the unchanged IP through independent administration and the console. A populated-host rename has not been rehearsed by the isolated guest restores, and off-host full-disk recovery remains separate work.
