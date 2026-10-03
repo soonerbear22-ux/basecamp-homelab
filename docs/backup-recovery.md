@@ -16,7 +16,7 @@ Check enabled status, guest scope, available capacity, last successful task, and
 
 Preserve Qdrant storage or a validated snapshot **together with** knowledge sources, processed files and `state/ingested.json`. Pause ingestion for an application-consistent copy. A filesystem copy of a running database is not automatically consistent. A successful guest snapshot job proves an archive exists; it does not prove restoration.
 
-## Isolated restore drill — not yet completed
+## Isolated restore procedure
 
 1. Select a successful archive and an unused test guest ID with sufficient storage. Never restore over a live guest as a test.
 2. Restore with networking disconnected or isolated and autostart disabled.
@@ -61,8 +61,18 @@ During the Hornburg rename preflight, live inspection found the enabled daily jo
 
 First full backups of media-automation (104) and Arda (105) completed successfully. Both passed Zstandard integrity tests; the media archive contains its rootfs/media-stack configuration, and Arda's archive passed VMA block-integrity verification. Archives and matching successful completion logs were observed for all six guests. Only the new 104/105 archives were integrity-tested in this session.
 
-The host's selected configuration and all six guest definitions were preserved in a protected checkpoint, with a checksum-verified copy on Elros. Guest archives remain on the same HDD/filesystem; this checkpoint does not establish off-host protection for the full guest disks. Media/data bind mounts need separate backups. No isolated guest/database restoration drill has been completed.
+The host's selected configuration and all six guest definitions were preserved in a protected checkpoint, with a checksum-verified copy on Elros. Guest archives remain on the same HDD/filesystem; this checkpoint does not establish off-host protection for the full guest disks. Media/data bind mounts need separate backups. Isolated whole-guest restoration now passed for 104 and 105; the other four guest restores, a separate SQL-dump import and a consistent Qdrant/knowledge restore remain untested.
 
 The existing backup-health page checks only the newest guest archive, not freshness for every expected guest. Its OK status cannot substitute for the per-guest checks above.
 
-The actual Proxmox/Linux name remains `basecamp`; the native Hornburg rename is pending the [maintenance and recovery gates](hornburg-rename-preflight.md).
+The actual Proxmox/Linux name remains `basecamp`. The operator approved a controlled outage conditional on recovery testing. The selected recovery checks passed, but Remote Desktop Commander's configured host-reboot restriction blocks native execution. See the [maintenance record](hornburg-rename-preflight.md).
+
+## October 3 isolated restore results
+
+The new media archive was restored into an unused test LXC with a fresh root disk, no bind mounts, no network interface and autostart disabled. Docker and all five application endpoints passed local checks. External media-library recovery and external service integration were outside this test.
+
+The new Arda VMA archive was restored into an unused test VM on a separate volume, with networking removed and autostart disabled before boot. MySQL, auth, world and the backup timer started; all three database schemas were queried successfully and the expected application ports listened. This tests whole-VM recovery, not a separate database-dump import or game-client login.
+
+Both test guests and their temporary volumes were removed after graceful shutdown. Production guests stayed running, and their config hashes remained unchanged. The daily snapshot/zstd/keep-last=7 job was paused during the drill and re-enabled for 100–105. Its next successful scheduled run remains to be observed.
+
+Selected config rollback material has a checksum-verified off-host copy. The complete guest archives and external media/data still require independent protection. A consistent pmxcfs database checkpoint also passed SQLite integrity checking and is retained privately.
