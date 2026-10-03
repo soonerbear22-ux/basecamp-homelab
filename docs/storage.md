@@ -21,3 +21,10 @@ A daily job and observed archives now cover all three guests. A named destinatio
 ## September 29 media addition
 
 [Jellyfin and media automation](jellyfin.md) add unprivileged guests 103 and 104. Today's read-only checks confirm Jellyfin health, five running media containers, and saved Radarr/Sonarr import/upgrade refresh hooks. The enabled backup job includes guest 103 but excludes guest 104; externally mounted library data needs separate protection. See the [dated evidence and remaining acceptance work](changes/2026-09-29.md). These services are outside the immutable V1 rebuild package and the core-only automatic inventory.
+
+
+## October 3 Arda storage
+
+VM 105 `arda` has a 64 GB qcow2 virtual disk on `basecamp-storage`. Inside the guest, the AzerothCore runtime and local timestamped database/configuration backups reside on that VM's storage path.
+
+Arda's daily in-guest backup timer is distinct from Proxmox guest-archive protection. A verified local SQL/configuration backup does not establish VM-level, off-host, or bare-metal recovery. Proxmox backup coverage for VM 105 is not claimed without a separate host-level verification.
