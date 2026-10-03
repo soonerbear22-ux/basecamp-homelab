@@ -46,6 +46,6 @@ Current role names used operationally are:
 - VM 102 AI worker role: **Bombadil**; the guest remains the dedicated embedding worker.
 - VM 105 **Arda** hosts the private AzerothCore WotLK realm.
 
-Arda is a dedicated 4-vCPU / 8 GiB VM with autostart enabled. Its MySQL, authentication and world services are separate from the core-services Docker stack. Arda uses its own daily in-guest database/configuration backup timer; inclusion in the Proxmox guest-backup job is not asserted here.
+Arda is a dedicated 4-vCPU / 8 GiB VM with autostart enabled. Its MySQL, authentication and world services are separate from the core-services Docker stack. Arda uses its own daily in-guest database/configuration backup timer and is also included in the daily Proxmox backup job covering guests 100-105.
 
 These names are presentation/role names. Where operating-system hostnames differ, live hostnames should be preserved until a deliberate rename is completed and verified.
