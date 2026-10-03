@@ -65,7 +65,7 @@ The host's selected configuration and all six guest definitions were preserved i
 
 The existing backup-health page checks only the newest guest archive, not freshness for every expected guest. Its OK status cannot substitute for the per-guest checks above.
 
-The actual Proxmox/Linux name remains `basecamp`. The operator approved a controlled outage conditional on recovery testing. The selected recovery checks passed, but Remote Desktop Commander's configured host-reboot restriction blocks native execution. See the [maintenance record](hornburg-rename-preflight.md).
+The native Proxmox/Linux name is now `hornburg`. After the selected recovery checks passed, the approved maintenance outage and operator-issued reboot completed successfully. All six guests started automatically and the daily backup job was re-enabled for 100–105. Existing storage IDs and paths remain unchanged. The next successful scheduled backup remains to be observed. See the [completed maintenance record](hornburg-rename-preflight.md).
 
 ## October 3 isolated restore results
 
