@@ -1,50 +1,143 @@
 #!/bin/bash
 
-printf '\n===== GWAIHIR HOMELAB STATUS =====\n'
-printf 'Checked: %s\n\n' "$(date)"
+# Gwaihir Homelab Operations Status
+# V3 - Network, service, and Proxmox guest-state checks
 
-check_host() {
+HORNBURG="192.168.1.10"
+CORE="192.168.1.20"
+PIHOLE="192.168.1.30"
+SENTINEL="192.168.1.31"
+PALANTIR="192.168.1.32"
+MEDIA="192.168.1.33"
+SSH_KEY="$HOME/.ssh/gwaihir_homelab"
+
+host_check() {
     local name="$1"
     local ip="$2"
 
     if ping -c 1 -W 1 "$ip" >/dev/null 2>&1; then
-        printf '%-22s %-15s ONLINE\n' "$name" "$ip"
+        printf "%-24s ONLINE\n" "$name"
     else
-        printf '%-22s %-15s OFFLINE\n' "$name" "$ip"
+        printf "%-24s UNREACHABLE\n" "$name"
     fi
 }
 
-check_service() {
+tcp_check() {
     local name="$1"
     local host="$2"
     local port="$3"
 
-    if timeout 2 bash -c "</dev/tcp/$host/$port" 2>/dev/null; then
-        printf '%-22s %-21s OPEN\n' "$name" "$host:$port"
+    if timeout 2 bash -c "</dev/tcp/$host/$port" >/dev/null 2>&1; then
+        printf "%-24s RESPONDING\n" "$name"
     else
-        printf '%-22s %-21s UNREACHABLE\n' "$name" "$host:$port"
+        printf "%-24s UNREACHABLE\n" "$name"
     fi
 }
 
-echo "HOSTS"
-echo "-------------------------------------------------------"
-check_host "Hornburg" "192.168.1.10"
-check_host "Pi-hole" "192.168.1.30"
-check_host "Sentinel" "192.168.1.31"
-check_host "Palantir" "192.168.1.32"
-check_host "Media Automation" "192.168.1.33"
+http_check() {
+    local name="$1"
+    local url="$2"
+    local expected="${3:-200}"
+
+    code=$(curl -k -L -s -o /dev/null -w "%{http_code}" \
+        --connect-timeout 2 --max-time 4 "$url")
+
+    if [ "$code" = "$expected" ]; then
+        printf "%-24s HEALTHY (HTTP %s)\n" "$name" "$code"
+    elif [ "$code" != "000" ]; then
+        printf "%-24s RESPONDING (HTTP %s)\n" "$name" "$code"
+    else
+        printf "%-24s UNREACHABLE\n" "$name"
+    fi
+}
+
+get_proxmox_states() {
+    PROXMOX_STATE=$(ssh -i "$SSH_KEY" \
+        -o IdentitiesOnly=yes \
+        -o BatchMode=yes \
+        -o ConnectTimeout=3 \
+        root@"$HORNBURG" \
+        'qm list; pct list' 2>/dev/null)
+}
+
+guest_state() {
+    local vmid="$1"
+    local name="$2"
+
+    state=$(printf '%s\n' "$PROXMOX_STATE" |
+        awk -v id="$vmid" '$1 == id {
+            if ($2 == "running" || $2 == "stopped") print $2;
+            else print $3;
+            exit
+        }')
+
+    case "$state" in
+        running)
+            printf "%-24s RUNNING\n" "$name"
+            ;;
+        stopped)
+            printf "%-24s STOPPED\n" "$name"
+            ;;
+        *)
+            printf "%-24s UNKNOWN\n" "$name"
+            ;;
+    esac
+}
 
 echo
-echo "SERVICES"
-echo "-------------------------------------------------------"
-check_service "Proxmox" "192.168.1.10" "8006"
-check_service "Pi-hole Web" "192.168.1.30" "80"
-check_service "Uptime Kuma" "192.168.1.31" "3001"
-check_service "Jellyfin" "192.168.1.32" "8096"
-check_service "Radarr" "192.168.1.33" "7878"
-check_service "Sonarr" "192.168.1.33" "8989"
-check_service "Prowlarr" "192.168.1.33" "9696"
-check_service "qBittorrent" "192.168.1.33" "8080"
+echo "========================================"
+echo "       GWAIHIR HOMELAB STATUS V3.1"
+echo "========================================"
+echo "Checked: $(date)"
+echo
+
+echo "===== HOST REACHABILITY ====="
+host_check "Hornburg" "$HORNBURG"
+host_check "core-services" "$CORE"
+host_check "Pi-hole" "$PIHOLE"
+host_check "Sentinel" "$SENTINEL"
+host_check "Palantir" "$PALANTIR"
+host_check "media-automation" "$MEDIA"
 
 echo
-echo "==================================="
+echo "===== PROXMOX GUESTS ====="
+get_proxmox_states
+guest_state 100 "VM 100 core-services"
+guest_state 101 "LXC 101 Pi-hole"
+guest_state 102 "VM 102 Bombadil"
+guest_state 103 "LXC 103 Palantir"
+guest_state 104 "LXC 104 media-auto"
+guest_state 105 "VM 105 Arda"
+
+echo
+echo "===== CORE SERVICES ====="
+http_check "Grafana" "http://$CORE:3000/login"
+http_check "Uptime Kuma" "http://$CORE:3001"
+http_check "Open WebUI" "http://$CORE:3002"
+http_check "Homepage" "http://$CORE:3003"
+http_check "Qdrant" "http://$CORE:6333/collections"
+tcp_check  "Open Terminal" "$CORE" 8000
+tcp_check  "Beszel" "$CORE" 8090
+tcp_check  "Homelab API" "$CORE" 8091
+http_check "Prometheus" "http://$CORE:9090/-/healthy"
+
+echo
+echo "===== MEDIA SERVICES ====="
+http_check "Jellyfin / Palantir" \
+    "http://$PALANTIR:8096/System/Info/Public"
+tcp_check "Radarr" "$MEDIA" 7878
+tcp_check "Sonarr" "$MEDIA" 8989
+tcp_check "Prowlarr" "$MEDIA" 9696
+tcp_check "qBittorrent" "$MEDIA" 8080
+
+echo
+echo "===== INFRASTRUCTURE ====="
+tcp_check "Proxmox Web" "$HORNBURG" 8006
+http_check "Sentinel Kuma" "http://$SENTINEL:3001"
+
+echo
+echo "===== EXTERNAL SYSTEMS ====="
+printf "%-24s UNKNOWN - Elros check pending\n" "Elros"
+
+echo
+echo "========================================"
