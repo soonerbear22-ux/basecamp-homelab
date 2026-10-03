@@ -23,8 +23,29 @@ COLLECTION = "homelab_knowledge"
 
 SUPPORTED = {".txt", ".md", ".pdf", ".docx"}
 
+SECRET_NAME_PATTERNS = {
+    "password",
+    "passwords",
+    "secret",
+    "secrets",
+    "credential",
+    "credentials",
+    "recovery-code",
+    "recovery-codes",
+    "private-key",
+    "private_key",
+    "id_rsa",
+    "id_ed25519",
+    ".env",
+}
+
 TARGET_CHARS = 1400
 OVERLAP_CHARS = 200
+
+
+def looks_secret_bearing(path):
+    name = path.name.lower()
+    return any(pattern in name for pattern in SECRET_NAME_PATTERNS)
 
 
 def utc_now():
@@ -344,6 +365,10 @@ def main():
         return
 
     for path in files:
+        if looks_secret_bearing(path):
+            print(f"REJECT: {path.name} (potential secret-bearing filename)")
+            continue
+
         try:
             ingest_file(path, state)
         except Exception as exc:
