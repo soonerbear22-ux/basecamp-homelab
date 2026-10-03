@@ -35,3 +35,17 @@ See the [September 27 current state](current-state.md), [incident resolutions](c
 ## September 29 media addition
 
 [Jellyfin and media automation](jellyfin.md) add unprivileged guests 103 and 104. Today's read-only checks confirm Jellyfin health, five running media containers, and saved Radarr/Sonarr import/upgrade refresh hooks. The enabled backup job includes guest 103 but excludes guest 104; externally mounted library data needs separate protection. See the [dated evidence and remaining acceptance work](changes/2026-09-29.md). These services are outside the immutable V1 rebuild package and the core-only automatic inventory.
+
+
+## October 3 current topology additions
+
+Current role names used operationally are:
+
+- Proxmox host role: **Hornburg**; the underlying host OS hostname remains `basecamp`.
+- Main Windows workstation role: **Elros**; historical documentation may still refer to Citadel.
+- VM 102 AI worker role: **Bombadil**; the guest remains the dedicated embedding worker.
+- VM 105 **Arda** hosts the private AzerothCore WotLK realm.
+
+Arda is a dedicated 4-vCPU / 8 GiB VM with autostart enabled. Its MySQL, authentication and world services are separate from the core-services Docker stack. Arda uses its own daily in-guest database/configuration backup timer; inclusion in the Proxmox guest-backup job is not asserted here.
+
+These names are presentation/role names. Where operating-system hostnames differ, live hostnames should be preserved until a deliberate rename is completed and verified.
