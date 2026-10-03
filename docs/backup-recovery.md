@@ -2,7 +2,7 @@
 
 [Overview](../README.md) · [Storage](storage.md) · [Operations](operations.md)
 
-## Final coverage
+## V1 coverage — September 26, 2026
 
 The enabled Proxmox job runs **daily**, in **snapshot** mode, with **Zstandard** compression and **keep-last=7**. Its explicit guest list is **100, 101, 102**. Archives exist for all three, including the first ai-worker backup from the completion session. The [reference stanza](../config/proxmox-backup.example.cfg) omits the private job identity.
 
@@ -53,3 +53,16 @@ This is application-level protection only. It does not prove:
 - the VM itself can be reconstructed from this backup without the documented runtime/configuration steps.
 
 Keep the [Arda runbook](arda.md) with the backup artifacts so source revision, runtime layout, service units and the worldserver stdin workaround are available during recovery.
+
+
+## October 3 current Proxmox coverage
+
+During the Hornburg rename preflight, live inspection found the enabled daily job included 100–103 and excluded 104/105. It was expanded to **100,101,102,103,104,105**, preserving the existing schedule, snapshot mode, Zstandard compression, storage and keep-last=7 retention.
+
+First full backups of media-automation (104) and Arda (105) completed successfully. Both passed Zstandard integrity tests; the media archive contains its rootfs/media-stack configuration, and Arda's archive passed VMA block-integrity verification. Archives and matching successful completion logs were observed for all six guests. Only the new 104/105 archives were integrity-tested in this session.
+
+The host's selected configuration and all six guest definitions were preserved in a protected checkpoint, with a checksum-verified copy on Elros. Guest archives remain on the same HDD/filesystem; this checkpoint does not establish off-host protection for the full guest disks. Media/data bind mounts need separate backups. No isolated guest/database restoration drill has been completed.
+
+The existing backup-health page checks only the newest guest archive, not freshness for every expected guest. Its OK status cannot substitute for the per-guest checks above.
+
+The actual Proxmox/Linux name remains `basecamp`; the native Hornburg rename is pending the [maintenance and recovery gates](hornburg-rename-preflight.md).
