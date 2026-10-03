@@ -6,9 +6,9 @@ This combines September 27 operating records, September 29 media checks, and Oct
 
 | Area | Latest supported state | Evidence limit |
 | --- | --- | --- |
-| Hornburg role / native basecamp | Six running guests: three QEMU VMs and three LXCs; all configured for autostart; native hostname remains basecamp | [Native rename preflight](hornburg-rename-preflight.md) completed; hostname change and recovery rehearsal remain pending |
+| Hornburg role / native basecamp | Six running guests: three QEMU VMs and three LXCs; all configured for autostart; native hostname remains basecamp | [Native rename preflight](hornburg-rename-preflight.md) completed; selected guest restores passed; native cutover is approved but blocked by the remote tool's host-reboot restriction |
 | Jellyfin / media automation | Guests 103 / 104 running; Jellyfin health passes; five media containers running; saved refresh triggers verified | Full request-to-playback acceptance remains outstanding; guest 104 now has a validated first archive and daily scheduled coverage |
-| Arda | VM 105 hosts a private AzerothCore WotLK realm; autostart, MySQL/auth/world service health and daily local database/configuration backup automation were verified October 3 | Local SQL backup integrity and first full Proxmox archive integrity were tested; isolated restoration remains separate work |
+| Arda | VM 105 hosts a private AzerothCore WotLK realm; autostart, MySQL/auth/world service health and daily local database/configuration backup automation were verified October 3 | Local SQL/archive integrity and isolated whole-VM restoration passed; separate SQL-dump import and game-client recovery login remain untested |
 | Citadel | Main Windows workstation, renamed; hosts Ollama and ComfyUI | Chat and image generation still depend on this separate machine |
 | Open WebUI | Runs on Basecamp; saved Ollama connection repaired after workstation changes | Six models and custom assistants returned; 99 chats and the account matched the pre-change backup |
 | Sentinel | Independent Raspberry Pi running DNS, monitoring, private access and emergency status | Client DNS selection determines whether independent DNS helps each client |
@@ -20,7 +20,7 @@ This combines September 27 operating records, September 29 media checks, and Oct
 
 - Preserve cable-label/termination mapping privately and confirm battery-backed outlet assignments. All five runs were labeled and operator-verified with a JDSU, with a confirmed 1,000 Mbps link rate. Formal certification level and measured application throughput were not supplied.
 - Confirm UPS USB telemetry on Basecamp before configuring or claiming NUT-driven shutdown. Do not cut power as an informal test.
-- Verify an independent copy and isolated restore of Basecamp guest backups; bulk data and guest archives still share a disk.
+- Verify independent copies and the remaining four guest restores; isolated restores of 104/105 passed. Bulk data and guest archives still share a disk.
 - Configure and test independent alert delivery. Local monitoring and status pages do not prove phone notifications work.
 - Revalidate full voice recovery separately. Prior voice use is not a current end-to-end acceptance test.
 
@@ -31,4 +31,6 @@ The [automatic inventory process](documentation-sync.md) covers a deliberately n
 
 The daily Proxmox job now includes all six guests, 100–105. New full archives for 104 and 105 passed compression integrity testing; Arda's archive also passed VMA block verification. The live six-guest audit and semantic retrieval remained healthy after these backups.
 
-Selected configuration rollback material is retained on the host and as a checksum-verified copy on Elros. The actual node is still `basecamp`. The [preflight](hornburg-rename-preflight.md) records the API, certificates, guest ownership, Tailscale, Samba, monitoring, storage and DNS dependencies. No native hostname change, host reboot or guest shutdown has been performed.
+Selected configuration rollback material is retained on the host and as a checksum-verified copy on Elros. A consistent pmxcfs database checkpoint passed integrity checking. Isolated recovery passed for media automation and Arda, and both test guests/volumes were removed. The six production guests stayed running and their configs remained unchanged; daily six-guest backups are re-enabled. The final live API audit retrieved all seven components and confirmed operational semantic retrieval.
+
+The actual node remains `basecamp`. The operator approved the maintenance outage conditional on recovery tests, but Remote Desktop Commander's configured host-reboot restriction blocks native cutover. Samba's existing BASECAMP identity/share and the old Tailscale name are explicitly retained for compatibility; mapped shares still work. A tested Hornburg API candidate is staged separately. No production guest shutdown, native hostname change or host reboot occurred. See the [concrete cutover and recovery record](hornburg-rename-preflight.md).
