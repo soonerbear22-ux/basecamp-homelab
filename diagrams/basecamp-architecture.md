@@ -1,18 +1,18 @@
-# Basecamp infrastructure
+# Middle-earth infrastructure
 
 [Overview](../README.md) · [Architecture](../docs/architecture.md) · [Rebuild](../docs/rebuild.md)
 
-Logical placement updated October 3 with Jellyfin/media automation, Arda, Elros and Sentinel. Frozen V1 details remain at the v1.0.0 tag. Lines show dependencies, not complete firewall rules or physical cabling. See the [current state](../docs/current-state.md) for evidence limits.
+Logical placement synchronized October 6 with Jellyfin/media automation, Arda, Elros and Sentinel. Frozen V1 details remain at the v1.0.0 tag. Lines show dependencies, not complete firewall rules or physical cabling. See the [current state](../docs/current-state.md) for evidence limits.
 
 ```mermaid
 flowchart TB
     CLIENT[Authorized clients] --> ACCESS[LAN and private Tailscale access]
-    subgraph BASE[Basecamp - Proxmox]
+    subgraph BASE[Hornburg - Proxmox]
       subgraph CORE[VM 100 - core-services]
         UI[Open WebUI]
         APPS[Homepage and Open Terminal]
         MON[Prometheus, Grafana, Kuma, Beszel and agents]
-        API[Homelab API - 13 operations]
+        API[Homelab API]
         INBOX[Authenticated Samba inbox]
         INGEST[systemd watcher and flock ingestion]
         QDRANT[Qdrant - knowledge vectors]
@@ -35,8 +35,8 @@ flowchart TB
       MEDIA --> LIBRARY
       LIBRARY --> JELLY
       MEDIA -->|Import and upgrade refresh| JELLY
-      BACKUP[Scheduled guest backups - 100, 101, 102, 103]
-      DISK[Bulk HDD - shared backup failure domain]
+      BACKUP[Scheduled guest backups - 100 through 105]
+      DISK[hornburg-backups - physical separation unverified]
       BACKUP --> DISK
     end
     subgraph PC[Elros - Windows workstation]
@@ -50,7 +50,7 @@ flowchart TB
     end
     ACCESS --> SDNS
     ACCESS --> SMON
-    SBACKUP --> DISK
+    SBACKUP --> BASE
     ACCESS --> JELLY
     ACCESS --> ARDA
     ACCESS --> UI
@@ -62,4 +62,4 @@ flowchart TB
     API --> TEI
 ```
 
-The original three guests and eleven core containers recovered in the V1 reboot test; that test does not cover media guests 103/104 or Arda VM 105. The current daily Proxmox backup job includes all six guests, 100-105; the next post-cutover scheduled successful run remains to be observed. Seerr belongs to the recorded request workflow but its current placement was not established, so it is omitted from this placement diagram. Backup archives exist for each guest; isolated restoration and off-host protection remain unverified. Voice is outside this V1 acceptance diagram. No private addresses or credentials are shown.
+The October 3 cutover record establishes all six guests autostarted; Prometheus required a manual start. Current backup scope is 100–105, daily snapshot/zstd/keep-last=7. The 2 TB class backup pool is observed logically; its physical/off-host protection remains unresolved. Selected isolated restores of 104/105 passed; other guest/data restores remain open. Seerr placement is unverified and omitted. The complete [monitoring triangle](../docs/monitoring.md) is verified 6/6 at runtime; this dependency diagram does not represent every monitoring edge. Private addresses and credentials are excluded. Frozen V1 details remain at the unchanged tag.

@@ -2,13 +2,15 @@
 
 [Overview](../README.md) · [Architecture](architecture.md) · [Diagram](../diagrams/basecamp-architecture.md) · [Security](security.md)
 
-## Documented topology
+Current outside-in peer checks are documented in [monitoring](monitoring.md). Canonical October 3 workstation observation was a 1 Gbps Ethernet link; no 2.5 Gbps upgrade or current switch change is established. Client resolver selection, full firewall/Tailscale policy, route advertisements and exact cabling remain private acceptance work. Historical device/access records below are not a current complete access inventory.
 
-| Component | Role in the baseline |
+## Logical topology
+
+| Component | Infrastructure role |
 | --- | --- |
 | AT&T BGW320 | Home gateway shown in the original diagram |
 | Home LAN | Local connectivity for infrastructure and clients |
-| BASECAMP | Proxmox host connected to the home network |
+| Hornburg | Native Proxmox host, formerly Basecamp |
 | core-services | Application VM participating in LAN and Tailscale connectivity |
 | ai-worker | Separate LAN and Tailscale reachability; embedding dependency for ingestion/search |
 | Pi-hole in LXC 101 | Network-level DNS filtering |
@@ -28,7 +30,7 @@ This describes the intended access model. It does not prove that every endpoint 
 
 Persistent network addressing is listed as prior completed work. The mechanism, lease/reservation arrangement, and complete address plan remain undocumented. Private addresses and tailnet names belong in private operational records, not this public repository.
 
-Use logical roles such as `BASECAMP`, `core-services`, and `DNS service` in public diagrams. Avoid publishing actual endpoint URLs in screenshots or copied command output.
+Use logical roles such as `Hornburg`, `core-services`, and `DNS service` in public diagrams. Avoid publishing actual endpoint URLs in screenshots or copied command output.
 
 ## Additional access validation
 
@@ -47,7 +49,7 @@ Record observations separately from assumptions. An application response, succes
 
 ## Planned changes
 
-VLANs, network segmentation, and managed switching are planned. No implemented VLAN IDs, subnet design, subnet router, exit node, or firewall policy is asserted here.
+VLANs, segmentation and managed-switch expansion are historical proposals, not current implementation or newly scheduled work. No implemented VLAN IDs, subnet design, subnet router, exit node, or firewall policy is asserted here.
 
 Before a network change, record the working baseline and a recovery access path privately. Change one layer at a time, verify the intended paths, and use the [troubleshooting record](troubleshooting.md) to document the outcome.
 
@@ -69,6 +71,6 @@ The physical installation now places the gateway/modem, Basecamp, Sentinel and C
 
 See the [September 27 current state](current-state.md), [incident resolutions](changes/2026-09-27.md), and [Sentinel runbook](sentinel.md) for workstation naming, physical power work, independent DNS/monitoring, mobile access and backup validation. The V1 measurements above remain dated evidence. Sentinel backups to Basecamp do not establish off-host protection for Basecamp guest backups.
 
-## September 29 media addition
+## Historical September 29 media addition (coverage superseded by current state)
 
 [Jellyfin and media automation](jellyfin.md) add unprivileged guests 103 and 104. Today's read-only checks confirm Jellyfin health, five running media containers, and saved Radarr/Sonarr import/upgrade refresh hooks. The enabled backup job includes guest 103 but excludes guest 104; externally mounted library data needs separate protection. See the [dated evidence and remaining acceptance work](changes/2026-09-29.md). These services are outside the immutable V1 rebuild package and the core-only automatic inventory.

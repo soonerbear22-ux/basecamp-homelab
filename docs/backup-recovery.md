@@ -2,6 +2,14 @@
 
 [Overview](../README.md) · [Storage](storage.md) · [Operations](operations.md)
 
+## Current protection — canonical state through October 6
+
+Configured Proxmox policy is daily snapshot, Zstandard, keep-last=7 for guests **100–105**. Current logical inventory includes `hornburg-backups` (about 1833 GiB, 2 TB class). Physical device/mount separation and newer scheduled-success readback remain unresolved in the supplied canonical package. Use the actual configured target privately; do not rely on the old `basecamp-backups` example as a current deployment instruction.
+
+Selected 104/105 archives passed integrity checks and isolated whole-guest restores; test guests/volumes were removed. External media, independent/off-host copies, other four guest restores, separate SQL import/client recovery and consistent knowledge-data restoration remain separate limits. A newest-archive health page is not proof every expected guest is fresh.
+
+The historical records below retain former backup scopes and shared-HDD placement. They do not override this current logical inventory or selected restore acceptance. No backup runtime changes or new scheduled verification were performed during repository synchronization.
+
 ## V1 coverage — September 26, 2026
 
 The enabled Proxmox job runs **daily**, in **snapshot** mode, with **Zstandard** compression and **keep-last=7**. Its explicit guest list is **100, 101, 102**. Archives exist for all three, including the first ai-worker backup from the completion session. The [reference stanza](../config/proxmox-backup.example.cfg) omits the private job identity.
@@ -12,7 +20,7 @@ VM 100's disk includes application data, Qdrant and knowledge state; LXC 101 con
 
 ## Before maintenance
 
-Check enabled status, guest scope, available capacity, last successful task, and archive timestamps through Proxmox or `pvesm list basecamp-backups`. Keep final private environment/CA settings, Pi-hole exports, WebUI settings and knowledge source/state backups outside GitHub.
+Check enabled status, guest scope, available capacity, last successful task, and archive timestamps through Proxmox or `pvesm list <CONFIGURED_BACKUP_STORAGE>`. Keep final private environment/CA settings, Pi-hole exports, WebUI settings and knowledge source/state backups outside GitHub.
 
 Preserve Qdrant storage or a validated snapshot **together with** knowledge sources, processed files and `state/ingested.json`. Pause ingestion for an application-consistent copy. A filesystem copy of a running database is not automatically consistent. A successful guest snapshot job proves an archive exists; it does not prove restoration.
 
@@ -30,7 +38,7 @@ Record deployed commits/digests and preserve pre-change data before updates. Rol
 
 Host reboot recovery passed in the completion session. That is distinct from restoring a lost or damaged guest from backup.
 
-## Post-V1 operating record
+## Historical post-V1 operating record
 
 See the [September 27 current state](current-state.md), [incident resolutions](changes/2026-09-27.md), and [Sentinel runbook](sentinel.md) for workstation naming, physical power work, independent DNS/monitoring, mobile access and backup validation. The V1 measurements above remain dated evidence. Sentinel backups to Basecamp do not establish off-host protection for Basecamp guest backups.
 
@@ -55,7 +63,7 @@ This is application-level protection only. It does not prove:
 Keep the [Arda runbook](arda.md) with the backup artifacts so source revision, runtime layout, service units and the worldserver stdin workaround are available during recovery.
 
 
-## October 3 current Proxmox coverage
+## Historical October 3 Proxmox coverage
 
 During the Hornburg rename preflight, live inspection found the enabled daily job included 100–103 and excluded 104/105. It was expanded to **100,101,102,103,104,105**, preserving the existing schedule, snapshot mode, Zstandard compression, storage and keep-last=7 retention.
 

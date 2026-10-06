@@ -7,7 +7,7 @@ Gwaihir is the Chromebook-based portable administration and recovery endpoint fo
 - ChromeOS Chromebook
 - Debian 13 Crostini Linux environment
 - Linux hostname: `gwaihir`
-- Primary Linux user: `soonerbear22`
+- Operator account and private endpoint values are configured locally
 
 ## Purpose
 
@@ -54,6 +54,8 @@ Subdirectories:
 
 ## homelab-status
 
+The public script uses reserved example hostnames by default. Supply `HORNBURG`, `CORE`, `PIHOLE`, `SENTINEL`, `PALANTIR`, `MEDIA`, `ELROS` and optionally `SSH_KEY` in the local environment; do not commit private values. This sanitization changes the public recipe only, not the commissioned installation.
+
 The `homelab-status` utility performs non-destructive network and TCP service checks from Gwaihir.
 
 The initial verified checks include:
@@ -73,7 +75,7 @@ The initial verified checks include:
 - Elros Kokoro TTS
 - Elros Sunshine
 
-Elros is currently monitored at LAN address `192.168.1.147`. Because Elros does not respond to ICMP ping from Gwaihir, its online state is determined from verified service reachability rather than ping alone.
+Elros is monitored at an operator-configured private endpoint. Because Elros does not respond to ICMP ping from Gwaihir, its online state is determined from verified service reachability rather than ping alone.
 
 All initial host and service checks passed during Gwaihir commissioning on October 2, 2026.
 

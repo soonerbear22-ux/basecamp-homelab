@@ -19,14 +19,14 @@ fi
 
 # V3.3 - Network, service, Proxmox guest-state, and Elros checks
 
-HORNBURG="192.168.1.10"
-CORE="192.168.1.20"
-PIHOLE="192.168.1.30"
-SENTINEL="192.168.1.31"
-PALANTIR="192.168.1.32"
-MEDIA="192.168.1.33"
-ELROS="192.168.1.147"
-SSH_KEY="$HOME/.ssh/gwaihir_homelab"
+HORNBURG="${HORNBURG:-hornburg.example.invalid}"
+CORE="${CORE:-core-services.example.invalid}"
+PIHOLE="${PIHOLE:-pihole.example.invalid}"
+SENTINEL="${SENTINEL:-sentinel.example.invalid}"
+PALANTIR="${PALANTIR:-palantir.example.invalid}"
+MEDIA="${MEDIA:-media.example.invalid}"
+ELROS="${ELROS:-elros.example.invalid}"
+SSH_KEY="${SSH_KEY:-$HOME/.ssh/gwaihir_homelab}"
 
 host_check() {
     local name="$1"

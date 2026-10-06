@@ -4,7 +4,7 @@
 
 ## Placement and observed state — September 29, 2026
 
-Jellyfin adds a dedicated media-serving workload to Basecamp. Media automation lives in a separate guest rather than the original core-services Docker project. This is a post-V1 operating addition; the immutable V1 Compose recipe and version manifest do not provision it.
+Jellyfin adds a dedicated media-serving workload to Hornburg. Media automation lives in a separate guest rather than the original core-services Docker project. This is a post-V1 operating addition; the immutable V1 Compose recipe and version manifest do not provision it.
 
 | Component | Placement and role | Evidence |
 | --- | --- | --- |
@@ -53,8 +53,8 @@ A separate search failure came from category mismatch: the configured software/L
 4. Inspect the saved refresh connection without copying headers or keys. An HTTP acceptance result does not by itself prove library indexing completed.
 5. For an end-to-end test, record an authorized sample's request, completed download, import, library visibility and playback result. Preserve a sanitized outcome rather than private media titles, client identities or raw logs.
 
-## Recovery limits
+## Recovery limits — current policy supersedes September 29 scope
 
-The enabled Proxmox backup job explicitly covers guests **100, 101, 102 and 103**. It does **not** list media-automation guest **104**. This verifies scheduled scope, not a successful backup archive or restore of Jellyfin. Confirm app-state backups for guest 104 before treating the media stack as recoverable.
+Current Proxmox policy covers **100–105**, including both media guests. Guest 104 has a verified archive and selected isolated restore of its rootfs/five local endpoints; external media and integrations were outside that drill. Guest 103 restoration remains open. September 29 exclusions above are historical.
 
-Jellyfin's mounted media requires its own backup assessment; guest backup inclusion does not establish protection for externally mounted library data. No isolated restoration, hardware-transcoding acceptance, performance benchmark or complete media-stack restart drill was performed in this update. Private service configuration and pinned rebuild artifacts for the media stack remain outside the public V1 reproduction package.
+Jellyfin's mounted media requires its own backup assessment; guest backup inclusion does not establish protection for externally mounted library data. Hardware transcoding, performance, complete request-to-playback and external-library recovery remain unverified; selected guest-104 restoration is narrower than complete media recovery. Private service configuration and pinned rebuild artifacts for the media stack remain outside the public V1 reproduction package.

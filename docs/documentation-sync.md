@@ -2,6 +2,12 @@
 
 [Overview](../README.md) · [Current state](current-state.md) · [Operations](operations.md)
 
+## Canonical synchronization boundary — October 6
+
+This manual public-documentation pass projects the latest saved five-file Homelab canonical package. Those private sources remain authoritative; GitHub is a sanitized downstream reference. This does not enable the earlier collector/publisher, prove its unattended runs, or ingest source revisions into Local AI.
+
+Local AI repository synchronization is the next separate task. An ongoing canonical-documentation → affected-repository closeout workflow remains high-priority design work after that; no automation was built here. Frozen V1 manifest, evidence, notes and tag remain historical. `release/CHECKSUMS.sha256` on main is the validator's reviewed current-file checksum index and advances with documentation; frozen checksum bytes remain at `v1.0.0`.
+
 ## Installation status — September 28, 2026
 
 The reviewed collector and publisher are installed on core-services. A manual collection and publisher dry run passed. The existing user crontab now runs the collector daily at **09:00 UTC** (04:00 Central daylight time / 03:00 Central standard time), using a non-overlapping lock and owner-private state directory. Existing schedule entries were preserved. Cron is active and does not require the operator to remain logged in. Cron does not catch up a run missed while the host is off; the first unattended scheduled execution remains to be observed.

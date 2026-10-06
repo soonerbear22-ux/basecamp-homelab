@@ -38,7 +38,7 @@ If a credential is ever committed, treat it as exposed: revoke or rotate it thro
 - Verify gateway forwarding and service exposure.
 - Establish a repeatable update and rollback process.
 - Design segmentation before marking VLAN isolation implemented.
-- Complete an isolated restore drill and independent off-host backup protection; V1 now has scheduled coverage and archives for all three guests.
+- Complete independent off-host protection and remaining restores; current policy covers six guests and selected isolated 104/105 restores passed.
 - Validate alert delivery and the limits of monitoring on shared infrastructure.
 
 Record implemented controls with date, scope, expected behavior, observed behavior, and remaining limitations. Keep sensitive evidence private and publish only the sanitized conclusion.

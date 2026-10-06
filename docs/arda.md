@@ -2,6 +2,8 @@
 
 [Overview](../README.md) · [Current state](current-state.md) · [Backup and recovery](backup-recovery.md)
 
+Current Homelab scope is VM 105 placement/resources, guest agent/autostart, six-guest Proxmox backup participation and selected isolated whole-VM restore acceptance. Separate SQL import/game-client recovery, application source revisions, accounts and gameplay belong to Arda. This pass does not synchronize Arda application behavior.
+
 Arda is a dedicated Ubuntu Server virtual machine hosting an AzerothCore Wrath of the Lich King 3.3.5a realm. This runbook records the public, sanitized operating facts and excludes private addresses, credentials, tokens and player data.
 
 ## Placement
@@ -10,22 +12,26 @@ Arda is a dedicated Ubuntu Server virtual machine hosting an AzerothCore Wrath o
 - Guest name: `arda`
 - vCPU: 4
 - RAM: 8 GiB
-- Virtual disk: 64 GiB qcow2 on bulk storage
+- Virtual disk: 64 GiB on local-lvm (newer canonical operator evidence supersedes the earlier qcow2/bulk-storage placement)
 - Autostart: enabled
 - Guest agent: enabled
 - OS: Ubuntu Server 24.04 LTS
 
 Arda is separate from the core-services, media and embedding workloads.
 
-## AzerothCore layout
+## Historical October 3 application record
+
+Application-specific facts below are retained as dated history, not refreshed by this infrastructure synchronization. Home-directory paths use a generic placeholder; use the Arda canonical package for current application operation.
+
+### AzerothCore layout
 
 Source repository:
 
-`/home/logan/azerothcore-wotlk`
+`/home/user/azerothcore-wotlk`
 
 Installed runtime:
 
-`/home/logan/azerothcore`
+`/home/user/azerothcore`
 
 These paths have different roles. Git operations belong in the source tree; runtime binaries and configuration are under the installed tree.
 
@@ -33,8 +39,8 @@ The verified source revision during the October 3 maintenance session was commit
 
 Runtime configuration includes:
 
-- `/home/logan/azerothcore/etc/authserver.conf`
-- `/home/logan/azerothcore/etc/worldserver.conf`
+- `/home/user/azerothcore/etc/authserver.conf`
+- `/home/user/azerothcore/etc/worldserver.conf`
 
 ## Databases and services
 
@@ -68,7 +74,7 @@ Setting `AC_DISABLE_INTERACTIVE=1`, including through the AzerothCore wrapper pa
 The working systemd approach keeps stdin open and non-terminating:
 
 ```bash
-/bin/bash -c 'exec 0< <(tail -f /dev/null); exec /home/logan/azerothcore/bin/worldserver -c /home/logan/azerothcore/etc/worldserver.conf'
+/bin/bash -c 'exec 0< <(tail -f /dev/null); exec /home/user/azerothcore/bin/worldserver -c /home/user/azerothcore/etc/worldserver.conf'
 ```
 
 After the change, worldserver remained available and the repeated `AC>` prompt output stopped.

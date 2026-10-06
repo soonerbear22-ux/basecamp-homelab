@@ -2,6 +2,12 @@
 
 [Overview](../README.md) · [Rebuild](rebuild.md) · [Backups](backup-recovery.md) · [Troubleshooting](troubleshooting.md)
 
+## Current monitoring operation
+
+Use [monitoring](monitoring.md) for the verified six-direction triangle. Inspect Elros task `Elros-Homelab-Watcher`, Local Service principal, boot/minute triggers, last result and advancing JSON status under `C:\ProgramData\MiddleEarthMonitoring\data`. A registered task alone is not execution evidence. Source under `bin` must remain protected; service write access belongs only in data. Status older than three minutes is stale.
+
+Inspect peer Kuma heartbeats and Prometheus targets independently. Core's new Sentinel checks have no notifications; Elros has local output only. Planned reboot and full notification acceptance remain follow-ups. Use disposable fixtures for recovery, not production shutdowns. Reference V1 Compose is not a second production deployment. Six-guest host autostart was observed during October 3 cutover, but the prior Prometheus restart miss still requires planned maintenance acceptance.
+
 ## Routine read-only checks
 
 On Proxmox, inspect host/storage health, guest state and recent backup task outcomes. In core-services, inspect Docker state and the ingestion watcher. In ai-worker, inspect guest memory, GPU availability and embedding service health.
@@ -30,10 +36,10 @@ Manual ingestion should use `systemctl start homelab-knowledge-ingest.service` s
 ## Recovery order
 
 1. Recover Proxmox and storage; inspect the host before changing guests.
-2. Verify Pi-hole/DNS and all three guest states. Confirm ai-worker's guest agent.
+2. Verify Pi-hole/DNS and all six current guest states. Confirm ai-worker's guest agent.
 3. Check Docker startup, Qdrant, Prometheus and GPU/TEI readiness.
 4. Check embeddings, retrieval and the full audit, then the WebUI and other interfaces.
-5. Check the inbox watcher, scheduled backup scope and application-specific functions. Main-PC inference/image availability is separate from Basecamp recovery.
+5. Check the inbox watcher, scheduled backup scope and application-specific functions. Main-PC inference/image availability is separate from Hornburg recovery.
 
 All three guests and eleven containers recovered in the recorded V1 reboot test. That observation does not justify unattended repeat reboots while users depend on the lab.
 
@@ -47,7 +53,7 @@ The reference Compose file uses the same container names as the live lab. It is 
 
 See the [September 27 current state](current-state.md), [incident resolutions](changes/2026-09-27.md), and [Sentinel runbook](sentinel.md) for workstation naming, physical power work, independent DNS/monitoring, mobile access and backup validation. The V1 measurements above remain dated evidence. Sentinel backups to Basecamp do not establish off-host protection for Basecamp guest backups.
 
-## September 29 media addition
+## Historical September 29 media addition (coverage superseded by current state)
 
 [Jellyfin and media automation](jellyfin.md) add unprivileged guests 103 and 104. Today's read-only checks confirm Jellyfin health, five running media containers, and saved Radarr/Sonarr import/upgrade refresh hooks. The enabled backup job includes guest 103 but excludes guest 104; externally mounted library data needs separate protection. See the [dated evidence and remaining acceptance work](changes/2026-09-29.md). These services are outside the immutable V1 rebuild package and the core-only automatic inventory.
 

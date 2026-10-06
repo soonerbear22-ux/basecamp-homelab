@@ -54,6 +54,9 @@ def privacy(name, text):
         error(name, "private IPv6 address pattern found")
     for match in re.finditer(r"(?im)^\s*(?:-\s*)?(?:[A-Z0-9_]*(?:TOKEN|PASSWORD|SECRET|API_KEY)[A-Z0-9_]*)\s*[:=]\s*([^\n]+)", text):
         value = match.group(1).strip().strip("\"'")
+        # A known filename-filter pattern set is code, not a credential.
+        if name == "knowledge/ingest.py" and match.group(0).strip() == "SECRET_NAME_PATTERNS = {":
+            continue
         if value and not any(x in value for x in ("${", "REPLACE_ME", "example", "test-only", "os.environ", "env(")):
             error(name, "non-placeholder credential assignment")
 
