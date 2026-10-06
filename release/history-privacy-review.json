@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "reviewed_on": "2026-10-06",
+  "findings": [
+    {
+      "blob": "7775489710595915d8ee57203732609a4ebd2cae",
+      "path": "docs/arda.md",
+      "category": "personal home path pattern found",
+      "review": "H16: historical private infrastructure information; removed from current tree at 73cc6a3; no credential. Retain exact historical blob without rewriting public history."
+    },
+    {
+      "blob": "93d629dc252b3924fc28f109330dbd110ac53c62",
+      "path": "docs/gwaihir.md",
+      "category": "numeric network address found",
+      "review": "H16: historical private infrastructure information; removed from current tree at 73cc6a3; no credential. Retain exact historical blob without rewriting public history."
+    },
+    {
+      "blob": "9e2f6880a2a0d2881a5d4e045efbf664f8589cda",
+      "path": "scripts/gwaihir/homelab-status",
+      "category": "numeric network address found",
+      "review": "H16: historical private infrastructure information; removed from current tree at 73cc6a3; no credential. Retain exact historical blob without rewriting public history."
+    },
+    {
+      "blob": "75607f190af5713e26b2c43a9ad1c7cf3d2d5206",
+      "path": "scripts/gwaihir/homelab-status",
+      "category": "numeric network address found",
+      "review": "H16: historical private infrastructure information; removed from current tree at 73cc6a3; no credential. Retain exact historical blob without rewriting public history."
+    },
+    {
+      "blob": "b524d4182d97ba9924bad2759fb5584de5f77c8f",
+      "path": "scripts/gwaihir/homelab-status",
+      "category": "numeric network address found",
+      "review": "H16: historical private infrastructure information; removed from current tree at 73cc6a3; no credential. Retain exact historical blob without rewriting public history."
+    },
+    {
+      "blob": "de2c8c51dd35c75cd5ec0ec507033fed80b51d69",
+      "path": "scripts/gwaihir/homelab-status",
+      "category": "numeric network address found",
+      "review": "H16: historical private infrastructure information; removed from current tree at 73cc6a3; no credential. Retain exact historical blob without rewriting public history."
+    }
+  ]
+}

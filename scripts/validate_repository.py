@@ -33,7 +33,7 @@ def public_files():
 def error(name, message):
     ERRORS.append(f"{name}: {message}")
 
-def privacy(name, text):
+def privacy(name, text, *, source_path=None):
     rules = {
         "private key": r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----",
         "GitHub credential": r"\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{30,})\b",
@@ -55,13 +55,48 @@ def privacy(name, text):
     for match in re.finditer(r"(?im)^\s*(?:-\s*)?(?:[A-Z0-9_]*(?:TOKEN|PASSWORD|SECRET|API_KEY)[A-Z0-9_]*)\s*[:=]\s*([^\n]+)", text):
         value = match.group(1).strip().strip("\"'")
         # A known filename-filter pattern set is code, not a credential.
-        if name == "knowledge/ingest.py" and match.group(0).strip() == "SECRET_NAME_PATTERNS = {":
+        if (source_path or name) == "knowledge/ingest.py" and match.group(0).strip() == "SECRET_NAME_PATTERNS = {":
             continue
         if value and not any(x in value for x in ("${", "REPLACE_ME", "example", "test-only", "os.environ", "env(")):
             error(name, "non-placeholder credential assignment")
 
+def history_reviews():
+    """Only exact reviewed infrastructure blobs; credentials cannot be exempted."""
+    path = ROOT / "release/history-privacy-review.json"
+    if not path.exists():
+        return {}
+    data = json.loads(path.read_text())
+    allowed = {"personal home path pattern found", "numeric network address found"}
+    reviews = {}
+    if data.get("version") != 1:
+        raise ValueError("unsupported history review version")
+    for item in data["findings"]:
+        key = (item["blob"], item["path"], item["category"])
+        if (not re.fullmatch(r"[0-9a-f]{40}", item["blob"])
+                or item["category"] not in allowed or not item.get("review")
+                or key in reviews):
+            raise ValueError("invalid or duplicate history review")
+        reviews[key] = item["review"]
+    return reviews
+
 def scan_history():
+    if git("rev-parse", "--is-shallow-repository").decode().strip() == "true":
+        error("history", "full clone required")
+        return
+    reviews = history_reviews()
+    seen = set()
     privacy("historical commit messages", git("log", "--all", "--format=%B").decode())
+    # rev-list supplies only one representative path. Enumerate trees so an
+    # identical blob at an unreviewed path does not inherit an exemption.
+    paths = {}
+    for commit in git("rev-list", "--all").decode().splitlines():
+        for row in git("ls-tree", "-r", "-z", commit).decode().split("\0"):
+            if not row:
+                continue
+            metadata, path = row.split("\t", 1)
+            _, kind, sha = metadata.split()
+            if kind == "blob":
+                paths.setdefault(sha, set()).add(path)
     objects = git("rev-list", "--objects", "--all").decode().splitlines()
     ids = [line.split(" ", 1)[0] for line in objects]
     metadata = git("cat-file", "--batch-check=%(objectname) %(objecttype)", input=("\n".join(ids)+"\n").encode()).decode().splitlines()
@@ -73,7 +108,24 @@ def scan_history():
         content = stream.read(int(size)); stream.read(1)
         try: text = content.decode("utf-8")
         except UnicodeDecodeError: continue
-        privacy("history blob " + sha[:12], text); scanned += 1
+        name = "history blob " + sha[:12]
+        blob_paths = paths.get(sha, set())
+        before = len(ERRORS)
+        source_path = "knowledge/ingest.py" if blob_paths == {"knowledge/ingest.py"} else None
+        privacy(name, text, source_path=source_path)
+        findings = ERRORS[before:]
+        del ERRORS[before:]
+        for finding in findings:
+            category = finding[len(name) + 2:]
+            keys = {(sha, path, category) for path in blob_paths}
+            if keys and keys <= reviews.keys():
+                seen.update(keys)
+                print(f"REVIEWED: {name}: {category}; exact historical path/blob disposition")
+            else:
+                ERRORS.append(finding)
+        scanned += 1
+    for sha, path, category in reviews.keys() - seen:
+        error("history review " + sha[:12], "stale or unmatched disposition")
     print(f"Scanned {scanned} unique text blobs reachable from local Git refs.")
 
 def validate(files):
