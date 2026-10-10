@@ -2,11 +2,11 @@
 
 [Overview](../README.md) · [Current state](current-state.md) · [Operations](operations.md)
 
-## Canonical synchronization boundary — October 6
+## Canonical synchronization boundary — October 10
 
 This manual public-documentation pass projects the latest saved five-file Homelab canonical package. Those private sources remain authoritative; GitHub is a sanitized downstream reference. This does not enable the earlier collector/publisher, prove its unattended runs, or ingest source revisions into Local AI.
 
-Local AI repository synchronization is the next separate task. An ongoing canonical-documentation → affected-repository closeout workflow remains high-priority design work after that; no automation was built here. Frozen V1 manifest, evidence, notes and tag remain historical. `release/CHECKSUMS.sha256` on main is the validator's reviewed current-file checksum index and advances with documentation; frozen checksum bytes remain at `v1.0.0`.
+Local AI public documentation synchronization completed at its October 6 owner checkpoint; runtime/source ingestion acceptance remains separate. The existing 44-test canonical-to-repository closeout toolkit is implemented. Durable private receipts, repository ownership mapping and read-only drift integration remain the Software & Codex handoff. No persistent host, native conversation-end hook, scheduled drift detector or automatic publisher is enabled by this documentation update. See the [October 10 reconciliation](changes/2026-10-10.md). Frozen V1 manifest, evidence, notes and tag remain historical. `release/CHECKSUMS.sha256` on main is the validator's reviewed current-file checksum index and advances with documentation; frozen checksum bytes remain at `v1.0.0`.
 
 ## Installation status — September 28, 2026
 

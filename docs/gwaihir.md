@@ -103,3 +103,11 @@ time the command is run. External-system status includes Elros and its
 verified Ollama, ComfyUI, Kokoro TTS, and Sunshine service checks.
 
 Normal `homelab-status` operation remains unchanged.
+
+## October 8 local dashboard and access checkpoint
+
+Dated operator terminal excerpts report SSH active and `gwaihir-dashboard.service` active/enabled, listeners 22/8088 and local dashboard HTTP 200. The dashboard workspace is `~/gwaihir/dashboard`, listening on `0.0.0.0:8088`; 8008 is not the observed dashboard port.
+
+A separate Hornburg guest-state query rejected key authentication while password login succeeded. This does not establish a forwarding or network root cause. An earlier assistant port-forwarding diagnosis remains an unverified hypothesis; local service health does not prove remote browser access or accurate guest state. Inspect the established route and authentication independently before any authorized repair.
+
+This repository includes the status helper and runbook; complete dashboard/server/static source and deployed hashes have not been reconciled. Published helper commits do not prove that the full installed dashboard matches GitHub. See [October 10 reconciliation](changes/2026-10-10.md). No dashboard, authentication or forwarding changes were made by that documentation task.

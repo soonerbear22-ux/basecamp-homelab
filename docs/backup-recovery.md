@@ -2,13 +2,27 @@
 
 [Overview](../README.md) · [Storage](storage.md) · [Operations](operations.md)
 
-## Current protection — canonical state through October 6
+## Current protection — reconciled October 10
 
-Configured Proxmox policy is daily snapshot, Zstandard, keep-last=7 for guests **100–105**. Current logical inventory includes `hornburg-backups` (about 1833 GiB, 2 TB class). Physical device/mount separation and newer scheduled-success readback remain unresolved in the supplied canonical package. Use the actual configured target privately; do not rely on the old `basecamp-backups` example as a current deployment instruction.
+October 5 operator readback confirms the enabled daily snapshot/Zstandard/keep-last=7 job for guests **100–105** targets `hornburg-backups`, backed by the separate Seagate Expansion USB 2 TB-class ext4 disk mounted at `/mnt/hornburg-backups`. The operator reports October 4 midnight scheduled `TASK OK` for all six; directory inspection independently listed their six October 4 archives under `/mnt/hornburg-backups/dump`. The original task log is not reproduced here, and the October 5 in-progress run was not observed complete. Use current configured targets; the old `basecamp-backups` example is not a current deployment instruction.
 
-Selected 104/105 archives passed integrity checks and isolated whole-guest restores; test guests/volumes were removed. External media, independent/off-host copies, other four guest restores, separate SQL import/client recovery and consistent knowledge-data restoration remain separate limits. A newest-archive health page is not proof every expected guest is fresh.
+Selected 104/105 archives passed integrity checks and isolated whole-guest restores; test guests/volumes were removed. External media, independent/off-host copies, other four guest restores, separate SQL import/client recovery and consistent knowledge-data restoration remain separate limits. The repaired checker evaluates every expected guest separately; filesystem freshness still does not prove task success, archive integrity or recovery.
 
-The historical records below retain former backup scopes and shared-HDD placement. They do not override this current logical inventory or selected restore acceptance. No backup runtime changes or new scheduled verification were performed during repository synchronization.
+The historical records below retain former backup scopes and shared-HDD placement. They do not override this current logical inventory or selected restore acceptance. No backup runtime changes or backup reruns were performed during this documentation synchronization. The recovered operator evidence is dated separately from the October 10 HTTP check.
+
+## Hornburg Backup Health — deployed October 5 repair
+
+The old checker read the former guest directory and selected one newest archive globally, producing a false stale error while also allowing another guest's newer archive to mask missing/stale backups. The operator preserved a rollback copy and repaired `/usr/local/sbin/basecamp-backup-health`:
+
+- Guest directory `/mnt/hornburg-backups/dump`, with a required backup mount.
+- Independent expected-ID checks: QEMU 100/102/105 `.vma.zst`; LXC 101/103/104 `.tar.zst`.
+- Newest matching archive per guest by filesystem mtime; missing or older than 36 hours produces ERROR naming each affected guest. Exactly 36 hours remains accepted.
+- Existing host-backup path, archive pattern and 36-hour rule retained; aggregated errors preserve simultaneous findings.
+- Existing `status`, `message`, `checked` JSON interface retained, with atomic writes. Existing HTTP server and Homepage configuration preserved.
+
+October 5 syntax check passed, controlled oneshot service result was success/exit 0, all six guest log lines and host check were OK, and JSON/HTTP agreed. Disposable redirected fixtures passed healthy/interface checks, each guest's missing/stale failures, exact threshold and host failure checks. Mounted-volume failure has a guard but no captured negative fixture. Rollback is retained privately; restoring the old script would restore its defect, so inspect current source and rollback before separately authorized use.
+
+October 10 read-only backup HTTP returned 200/OK with the repaired six-guest-and-host message and a current checked timestamp. Direct normal timer journal provenance, current installed hash and Homepage server-fetch/rendered-tile acceptance remain open. Timer was enabled/active with boot and 15-minute activation settings; early October 5 queries preceded the next due time and did not establish a failed timer. A healthy Homepage root does not prove the tile consumed this result. See [October 10 evidence limits](changes/2026-10-10.md).
 
 ## V1 coverage — September 26, 2026
 

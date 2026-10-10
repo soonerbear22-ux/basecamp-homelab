@@ -1,10 +1,10 @@
-# Current state — October 6, 2026
+# Current state — October 10, 2026
 
 [Overview](../README.md) · [Change and incident record](changes/2026-09-27.md) · [Sentinel](sentinel.md)
 
-## Verified public projection — October 6, 2026
+## Verified public projection — October 10, 2026
 
-The latest saved private Homelab canonical package is authoritative; this is its sanitized public projection, not a fresh infrastructure audit. E10 monitoring observations were collected October 6; other facts retain their canonical dates. Private addresses, identities, notification destinations and corpus content are excluded.
+The latest saved private Homelab canonical package is authoritative; this is its sanitized public projection, not a fresh infrastructure audit. E10 monitoring observations were collected October 6; the recovered backup/storage evidence dates to October 5, Gwaihir to October 8, and endpoint/access checkpoints to October 10. This documentation update makes no runtime changes. Private addresses, identities, notification destinations and corpus content are excluded.
 
 | Component | Current supported role/state | Limit |
 | --- | --- | --- |
@@ -13,8 +13,11 @@ The latest saved private Homelab canonical package is authoritative; this is its
 | Sentinel | Independent Raspberry Pi, secondary Pi-hole/DNS, Kuma and self-contained host-health/status | Client DNS selection still matters; no dependency on Hornburg for local watcher health |
 | Core monitoring | Kuma, Prometheus, Grafana, Beszel and agents in VM 100 | Monitoring guest shares Hornburg's failure domain |
 | Monitoring triangle | All six directed peer relationships runtime-verified; Local Service observer on Elros | Reboot/device/full alert acceptance remains follow-up, not an implementation blocker |
-| Backup policy | Daily snapshot, zstd, keep-last=7, guests 100–105 | Newer scheduled execution not verified by the supplied canonical package |
-| Backup storage | `hornburg-backups`, about 1833 GiB (2 TB class logical pool) | Physical separation and off-host protection remain unresolved |
+| Backup policy | Enabled daily snapshot/zstd/keep-last=7 for 100–105 targeting `hornburg-backups`; October 4 TASK OK/all six operator-reported; six archives observed October 5 | Original task log and later complete set, retention/integrity and recovery remain separate |
+| Backup storage | October 5 physical chain proves Seagate Expansion USB 2 TB-class ext4 backup disk separate from WD bulk storage | Same-host media is not off-host protection; dated device evidence needs current inspection before operations |
+| Backup health | Deployed per-guest checker plus retained host check; syntax/service/JSON/HTTP/isolated fixtures passed; fresh corrected HTTP OK October 10 | Timer provenance, current source/set and Homepage tile/core-fetch acceptance remain open |
+| Gwaihir | October 8 local SSH/dashboard active, dashboard enabled, listener 8088 and local HTTP 200 | Remote route, guest-query key authentication and full dashboard source correspondence unresolved |
+| Beszel media coverage | October 10 hub/core agent healthy and media endpoints reachable | 103/104 registrations, agent metrics/startup/restart acceptance blocked by administrative/dashboard access (H17) |
 
 ### Hornburg guests
 
@@ -29,7 +32,7 @@ The latest saved private Homelab canonical package is authoritative; this is its
 
 All six were running in the October 3 canonical inventory; autostart and successful cutover reboot are recorded. E10 confirms live core monitoring and peer endpoint state; it does not re-audit every application. VM 105's newer local-lvm configuration supersedes old qcow2/bulk-storage notes. Core inventory later includes twelve containers (the prior eleven plus Varda); application details and Local AI lifecycle remain with their owning projects.
 
-See [monitoring](monitoring.md) for the six directions and exact acceptance limits, [storage](storage.md) for persistence boundaries, and [backups](backup-recovery.md) for restore scope. Remaining infrastructure work includes backup physical/scheduled evidence, planned Prometheus restart acceptance, UPS telemetry, media workflow acceptance and broader access policy. Local AI repository synchronization and ongoing canonical-to-repository workflow design are separate next tasks.
+See [monitoring](monitoring.md) for the six directions and exact acceptance limits, [storage](storage.md) for persistence boundaries, and [backups](backup-recovery.md) for restore scope. H01/H02 narrow the dated disk/target and scheduled/archive portions; current retention/checkpoints, direct task/timer evidence and Homepage acceptance remain. Other work includes planned Prometheus restart, independent recovery, notification/device acceptance, UPS, media workflow and access policy. Local AI public synchronization completed at its October 6 owner checkpoint; runtime/ingestion remains owner work. The existing 44-test closeout toolkit is implemented; durable receipts, ownership routing and drift integration are the Software & Codex handoff. See the [dated reconciliation](changes/2026-10-10.md).
 
 ## Historical operating records through October 3
 
@@ -53,7 +56,7 @@ The sections below retain September 27 operating records, September 29 media che
 
 - Preserve cable-label/termination mapping privately and confirm battery-backed outlet assignments. All five runs were labeled and operator-verified with a JDSU, with a confirmed 1,000 Mbps link rate. Formal certification level and measured application throughput were not supplied.
 - Confirm UPS USB telemetry on Basecamp before configuring or claiming NUT-driven shutdown. Do not cut power as an informal test.
-- Verify independent copies and the remaining four guest restores; isolated restores of 104/105 passed. Bulk data and guest archives still share a disk.
+- Verify independent copies and the remaining four guest restores; isolated restores of 104/105 passed. That was the historical shared-disk layout; October 5 inspection proves a separate attached backup disk, still without off-host recovery acceptance.
 - Configure and test independent alert delivery. Local monitoring and status pages do not prove phone notifications work.
 - Revalidate full voice recovery separately. Prior voice use is not a current end-to-end acceptance test.
 

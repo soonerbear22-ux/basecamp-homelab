@@ -8,6 +8,14 @@ Use [monitoring](monitoring.md) for the verified six-direction triangle. Inspect
 
 Inspect peer Kuma heartbeats and Prometheus targets independently. Core's new Sentinel checks have no notifications; Elros has local output only. Planned reboot and full notification acceptance remain follow-ups. Use disposable fixtures for recovery, not production shutdowns. Reference V1 Compose is not a second production deployment. Six-guest host autostart was observed during October 3 cutover, but the prior Prometheus restart miss still requires planned maintenance acceptance.
 
+## Current backup-health operation
+
+Use the [backup runbook](backup-recovery.md) for the deployed per-guest checker, retained host rule and unchanged JSON interface. Inspect the UUID-backed backup mount, current job target and each expected guest archive before maintenance. Check `basecamp-backup-health.service` result/journal and `basecamp-backup-health.timer` enablement, activity and actual subsequent invocation independently. Enabled status and next due time alone are not invocation proof.
+
+Acceptance proceeds through syntax, controlled checker/service result, all six guest log lines, JSON, existing HTTP endpoint, core-services fetch and Homepage tile, then normal scheduled generation. Use disposable redirected fixtures for failure cases; do not modify production archive mtimes or rerun a full backup to fix the page. Keep private endpoints, device identifiers, raw logs and rollback paths outside public Git. Current source/hash, timer provenance and Homepage acceptance remain unresolved in the dated evidence.
+
+Gwaihir's commissioned dashboard listener is 8088. Inspect existing service/source before changes; local service health, remote route, guest-query authentication and source publication are different checks. See [Gwaihir](gwaihir.md).
+
 ## Routine read-only checks
 
 On Proxmox, inspect host/storage health, guest state and recent backup task outcomes. In core-services, inspect Docker state and the ingestion watcher. In ai-worker, inspect guest memory, GPU availability and embedding service health.

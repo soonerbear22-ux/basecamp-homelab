@@ -2,11 +2,11 @@
 
 [Overview](../README.md) · [Backups](backup-recovery.md)
 
-## Current logical layout — canonical evidence through October 6
+## Current storage — reconciled October 10
 
 Canonical inventory reports `basecamp-storage` about 3666 GiB, `hornburg-backups` about 1833 GiB (2 TB class), `local` about 94 GiB and `local-lvm` about 794 GiB. The old `basecamp-backups` ID is absent from that returned inventory. Storage IDs retain their independent compatibility meaning; do not rename them with the host.
 
-The changed backup pool is verified logically. A dedicated physical 2 TB device, its mount chain and independence from bulk storage are **not yet verified by the supplied canonical package**. The earlier same-ext4/HDD statement describes the former layout. Neither pool capacity nor name establishes physical separation or off-host protection.
+October 5 operator inspection establishes the physical chain: Seagate Expansion USB 2 TB-class disk → ext4 partition → `/mnt/hornburg-backups` → Proxmox directory storage `hornburg-backups` → enabled daily six-guest backup job → archives in `dump`. Bulk storage resides on a different WD 4 TB-class disk. Filesystem identity and persistent mount configuration matched the device inspection; serials, UUIDs and device letters remain private. This supersedes the former shared-HDD placement as of that observation. Separate attached media is not off-host protection; current mount persistence and recovery remain distinct acceptance checks.
 
 All six current guest root volumes are documented on local-lvm; [current state](current-state.md) has capacities. Arda VM 105's newer 64 GiB local-lvm configuration supersedes the old qcow2-on-bulk-storage record. Resolve exact backing devices privately before disk work.
 
@@ -18,7 +18,7 @@ The inspected Qdrant storage is outside the common application-data directory. B
 
 ## Remaining work
 
-The configured daily snapshot/zstd/keep-last=7 policy covers all six guests. Selected whole-guest restores of 104/105 passed; the others and external data remain open. A named destination, mount or successful archive still does not establish application consistency or tested restoration. Independent off-host protection and newer scheduled-success/physical-target readback remain unverified.
+The configured daily snapshot/zstd/keep-last=7 policy covers all six guests. Selected whole-guest restores of 104/105 passed; the others and external data remain open. A named destination, mount or successful archive still does not establish application consistency or tested restoration. October 4 scheduled success is operator-reported and six archives were independently listed October 5. Executed retention, current mount/set verification and independent off-host protection remain open. See the [dated reconciliation](changes/2026-10-10.md).
 
 ## Historical September 29 media addition (coverage superseded)
 
